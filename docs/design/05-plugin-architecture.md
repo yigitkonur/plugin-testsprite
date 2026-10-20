@@ -5,7 +5,7 @@ Spec facts cite `SPEC:` pages in `sources/claude-code-spec/` (read raw, 2026-10-
 
 ## 1. Design principles (each one is a consequence of something verified)
 
-1. **The plugin is the judgment-and-steering layer; it never restates the CLI's flag surface.** 11 CLI releases in the 3 months since 0.4.0 (the version your skills pin); those skills are already stale. Stable knowledge (model, rules, triage, fit) lives in the plugin; exact flags come from the
+1. **The plugin is the judgment-and-steering layer; it never restates the CLI's flag surface.** 11 CLI releases in the 3 months since 0.4.0 (the version the earlier skills pin); those skills are already stale. Stable knowledge (model, rules, triage, fit) lives in the plugin; exact flags come from the
    installed CLI at the moment of use (`sprite-ref`, `testsprite <cmd> --help`). [V CHG; package `files` includes `skills/`, `schemas/`]
 2. **Pay for context only when it is needed.** Always-on text is two model-invocable skill descriptions, two agent descriptions, and three very short user-only
    descriptions; everything else loads on demand. **Measured**, not estimated: ~347 tokens on a skeleton built from these sketches (§9). Skill listing text is truncated at 1,536 characters per skill
@@ -108,7 +108,7 @@ Only `name` is required; components are auto-discovered; unknown top-level keys 
 ```
 Notes: booleans, not a `string` with `options`, because **any** `options` field makes the plugin unloadable below Claude Code 2.1.271. [V SPEC:plugins_manifest-reference.md:483] Hook scripts read the values from
 `CLAUDE_PLUGIN_OPTION_GUARD`, `…_STOP_GATE`, `…_CONFIRM_RUNS_OVER`. [V same, "Reference a saved value"]
-`author.name` and `repository` mirror your other plugins and are placeholders for you to confirm.
+`author.name` and `repository` mirror the maintainer's other plugins.
 
 **Release rule (borrowed from SWUI AGENTS.md):** any shipped change (skills, agents, hooks, bin, references) bumps `version` in the same commit;
 installers gate updates on it. Tag with `claude plugin tag` (checks manifest/marketplace agreement). [V SPEC:plugins_cli-reference.md `plugin tag`]
@@ -268,7 +268,7 @@ Hooks are "harness-only — no model context cost" in the tool's inventory; thei
 
 ## 10. Provenance map: where each piece of existing logic landed (native vs ported)
 
-The test for "reformatted skill files": for each piece of logic in the official skills and your two skills, which primitive now owns it, and what that buys that a paragraph in a `SKILL.md` did not.
+The test for "reformatted skill files": for each piece of logic in the official skills and the earlier skills, which primitive now owns it, and what that buys that a paragraph in a `SKILL.md` did not.
 
 | Logic (from) | Now lives in | What the primitive adds |
 |---|---|---|
@@ -297,7 +297,7 @@ Honest ranking, strongest to weakest. "Weak" means: build it last, measure it, a
 | Component | What breaks without it | Verdict |
 |---|---|---|
 | `testsprite` skill (router + references) | No cost model, no fit knowledge, no authoring/triage rules loaded on demand | **Core** |
-| Guard hook | Fan-out spend, deletions and secret-in-argv depend on the model remembering; subagents can run billable commands | **Core** (and matches your "ask first only for money" rule) |
+| Guard hook | Fan-out spend, deletions and secret-in-argv depend on the model remembering; subagents can run billable commands | **Core** (and matches an "ask first only for money" rule) |
 | `sprite-detect` + fit gate | The agent pushes a stdio MCP server or Go CLI through a setup that cannot work, and creates cloud state | **Core** (this is the plugin's honesty) |
 | `sprite-state` | Extra tool calls to learn auth/project/version; no monorepo resolution | **Core**, tiny |
 | `failure-triager` | Failure bundles flood the main context | **Strong** (answer ≪ reading) |

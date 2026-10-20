@@ -84,15 +84,15 @@ Source keys: see `README.md`. All paths are under `sources/`. Line numbers refer
 | S21 | **Observed:** `claude plugin validate <skeleton> --strict` passes for the manifest, `skills/` and `agents/` built verbatim from this plan's sketches. It does **not** read `hooks.json` (given a bare `hooks.json` it reports "name: expected string" because it treats the file as a manifest) | `tools/build_validation_skeleton.py`; run 2026-10-20 on Claude Code 2.1.302 |
 | S22 | **Observed:** `claude --plugin-dir <skeleton> plugin details testsprite` lists 5 skills, 2 agents, 3 hooks (SessionStart, PreToolUse, Stop; "harness-only — no model context cost"); always-on **~554 tok** (first-draft descriptions) → **~347 tok** (current) | same run; per-component numbers in doc 05 §9 |
 
-### 1.4 Other plugins and your skills
+### 1.4 Other plugins and the earlier skills
 
 | ID | Claim | Source |
 |---|---|---|
 | P1 | SwiftUI plugin: 1 hook (PostToolUse, non-blocking, static grep), 1 agent, 4 commands, 33 skills; description lengths 585–1,036 chars (median 986); manifest 914 B | `plugin-swiftui/hooks/`, `agents/`, `commands/`, `skills/*/SKILL.md` (measured) |
 | P2 | SwiftUI `AGENTS.md`: bump version on shipped change; no path fields in manifest; `$ARGUMENTS`/`!` do not run on the model path | `plugin-swiftui/AGENTS.md` |
 | P3 | SwiftUI `eval/`: deterministic baseline-vs-grounded scoring (parses, deprecated count, lint, shape regex) | `plugin-swiftui/eval/README.md`, `RESULTS.md` |
-| Y1 | Your skills: backend `SKILL.md` 26,374 B + 110,084 B references + 159,988 B script; frontend 15,128 B + 54,759 B + 24,166 B; both `disable-model-invocation: true`; both pinned to CLI 0.4.0 | `yigitkonur-skills/skills/run-testsprite-*/` (measured) |
-| Y2 | Your frontend skill routes localhost to MCP and says `run --all --target-url` is rejected (exit 5); 0.13.0 made it apply to FE batches | `…/run-testsprite-frontend/SKILL.md` steps 3 and 10; `CHANGELOG.md` 0.13.0 |
+| Y1 | The earlier skills: backend `SKILL.md` 26,374 B + 110,084 B references + 159,988 B script; frontend 15,128 B + 54,759 B + 24,166 B; both `disable-model-invocation: true`; both pinned to CLI 0.4.0 | `yigitkonur-skills/skills/run-testsprite-*/` (measured) |
+| Y2 | The earlier frontend skill routes localhost to MCP and says `run --all --target-url` is rejected (exit 5); 0.13.0 made it apply to FE batches | `…/run-testsprite-frontend/SKILL.md` steps 3 and 10; `CHANGELOG.md` 0.13.0 |
 
 ## 2. Unverified (U) — what is open, how to close it, and the cost
 

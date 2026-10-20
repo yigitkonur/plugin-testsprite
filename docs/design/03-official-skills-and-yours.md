@@ -1,4 +1,4 @@
-# 03 · The official skills, your two skills, and the SwiftUI plugin
+# 03 · The official skills, the author's earlier skills, and the SwiftUI plugin
 
 Source keys and evidence tags: see `README.md`. Sizes are bytes measured from `sources/`.
 
@@ -58,11 +58,11 @@ These are the parts a plugin should carry forward, rewritten into progressive-di
 | No audit workflow (assess coverage of an existing suite, separate bug from test defect) | absent | `/testsprite:audit` (doc 07) |
 | No path for MCP servers, CLI tools, libraries, GraphQL, monorepos | absent; backend skill says "test the API over HTTP" only | doc 04 |
 | Spend control is advice ("don't auto-run the full suite") | ONBOARD "Don'ts" | `PreToolUse` guard (doc 06) |
-| Install is per-repo files (committed, version-stamped) — good for teams, but it duplicates and drifts; 11 releases in 3 months since the 0.4.0 your skills pin | HELP:agent-status; CHG | Plugin reads the **installed** CLI's own copy via `sprite-ref` |
+| Install is per-repo files (committed, version-stamped) — good for teams, but it duplicates and drifts; 11 releases in 3 months since the 0.4.0 the earlier skills pin | HELP:agent-status; CHG | Plugin reads the **installed** CLI's own copy via `sprite-ref` |
 | Two clashing locations of truth for the backend target URL | `{TARGET_URL}` in the skill vs `BASE_URL` in the CLI scaffold | **[U2]**; plugin templates use an explicit `BASE_URL` |
 | BE dependency mechanism incomplete: tells you to declare `--produces`, not how the Python exports the value | VERIFY:241-271 | **[U1]** spike before backend guidance is final |
 
-## 4. Your two skills
+## 4. The author's earlier skills (`run-testsprite-backend`, `run-testsprite-frontend`)
 
 Files: `sources/yigitkonur-skills/skills/run-testsprite-{backend,frontend}/`.
 

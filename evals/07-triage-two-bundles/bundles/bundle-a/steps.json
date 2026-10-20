@@ -1,0 +1,12 @@
+[
+ {"i":1,"action":"navigate","target":"/","ok":true},
+ {"i":2,"action":"click","target":"button 'Add to cart' (first of 6)","ok":true},
+ {"i":3,"action":"click","target":"link 'Cart'","ok":true},
+ {"i":4,"action":"click","target":"button 'Continue shopping'","ok":true,"note":"ambiguous: two buttons match 'checkout button'"},
+ {"i":5,"action":"click","target":"button 'Continue shopping'","ok":true},
+ {"i":6,"action":"click","target":"button 'Continue shopping'","ok":true},
+ {"i":7,"action":"click","target":"button 'Continue shopping'","ok":true},
+ {"i":8,"action":"click","target":"button 'Continue shopping'","ok":true},
+ {"i":9,"action":"assert","target":"element is visible","ok":true,"note":"assertion has no subject"},
+ {"i":10,"action":"skip","target":"steps 6-9","note":"skipped as ambiguous"}
+]

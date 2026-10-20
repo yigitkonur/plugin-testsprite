@@ -1,0 +1,4 @@
+<main><h1>Your cart (1)</h1>
+<button>Continue shopping</button>
+<button id="co" aria-label="Proceed to payment">Checkout</button>
+<a href="/checkout" class="btn">Checkout (secure)</a></main>

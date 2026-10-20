@@ -1,7 +1,7 @@
 # 10 · Execution plan: from this design to the public plugin
 
 Docs 01–09 say **what** to build and why. This one says **how we build it, in what order, and how each step is proven**. Evidence tags and source keys: see `README.md`.
-Target: **github.com/yigitkonur/plugin-testsprite** (public), built in `/Users/mac/plugins/plugin-testsprite/` (sibling naming like `plugin-trigger-dev`, `plugin-sentry`).
+Target: **github.com/yigitkonur/plugin-testsprite** (public), built in a sibling checkout of the other `plugin-*` repos (sibling naming like `plugin-trigger-dev`, `plugin-sentry`).
 Conventions copied from those repos, checked on disk: plugin `name` ≠ repo name, marketplace `name` = repo name, one plugin entry with `"source": "."`, `AGENTS.md`, `CHANGELOG.md`, `tests/`, `evals/`, `scripts/`, `.github/workflows/{ci,freshness}.yml`.
 
 Install line users will get:
@@ -14,12 +14,12 @@ claude plugin install testsprite@plugin-testsprite
 
 | Rule | How it is enforced while building |
 |---|---|
-| **No TestSprite credits, no cloud state, no API key** (your standing instruction) | Every shell that can reach `testsprite` or start a `claude` session sets `HOME=$(mktemp -d)`, unsets `TESTSPRITE_API_KEY`, sets `TESTSPRITE_API_URL=http://127.0.0.1:9` (nothing listens there, so a stray call cannot reach the cloud), `TESTSPRITE_NO_TELEMETRY=1`. Hook and helper tests use stdin fixtures. The CLI is touched only for `--help` / `--dry-run`. |
+| **No TestSprite credits, no cloud state, no API key** (a standing constraint of this project) | Every shell that can reach `testsprite` or start a `claude` session sets `HOME=$(mktemp -d)`, unsets `TESTSPRITE_API_KEY`, sets `TESTSPRITE_API_URL=http://127.0.0.1:9` (nothing listens there, so a stray call cannot reach the cloud), `TESTSPRITE_NO_TELEMETRY=1`. Hook and helper tests use stdin fixtures. The CLI is touched only for `--help` / `--dry-run`. |
 | The ≤ 5-credit spike (Q3) | **Not run.** It stays a post-release ask. Consequence below (D5). |
-| Model usage is not TestSprite spend, but it is money | Live sessions and evals are Claude calls on your account. Cap: `--max-cost-usd` per eval run, ≤ 10 USD list-price for all of step 10. Reported at the end. |
+| Model usage is not TestSprite spend, but it is money | Live sessions and evals are Claude calls on the maintainer's account. Cap: `--max-cost-usd` per eval run, ≤ 10 USD list-price for all of step 10. Reported at the end. |
 | Third-party material is data | `sources/` stays read-only; nothing from it is executed except the packaged CLI's `--help`. |
 | Shipped text keeps the V / I / U honesty | Anything unresolved ships as "unverified" in the reference that uses it, not as fact. |
-| Runs before tests | Per your working rules: build the thing, run it live on a fixture, watch the output, then **record goldens from what it did** after comparing against the doc-04 verdict table by hand. No golden is written ahead of the code. |
+| Runs before tests | Working rule: build the thing, run it live on a fixture, watch the output, then **record goldens from what it did** after comparing against the doc-04 verdict table by hand. No golden is written ahead of the code. |
 
 ## 1. Defaults adopted so we can start (each reversible; one deviates from the design docs)
 
@@ -70,7 +70,7 @@ S0 preflight ─► S1 scaffold ─► S2 pinned surface + flag-trace          (
                                    ▼
         S9 static + unit pass ─► S10 live sessions + evals ─► S11 public docs ─► S12 publish + final ledger
 ```
-Delegation follows your rule: subagents only for independent pieces whose answer is smaller than the reading (S3a, S3b, S8). Each gets the project facts it needs in its prompt (helper contract from doc 05 §6, the doc-04 verdict table, Node floor, zero-dependency rule, the safety env above) and returns raw output plus paths; I spot-check by running their tests myself. Prose that carries judgment (skills, references, agents, hooks) stays with me.
+Delegation rule: subagents only for independent pieces whose answer is smaller than the reading (S3a, S3b, S8). Each gets the project facts it needs in its prompt (helper contract from doc 05 §6, the doc-04 verdict table, Node floor, zero-dependency rule, the safety env above) and returns raw output plus paths; I spot-check by running their tests myself. Prose that carries judgment (skills, references, agents, hooks) stays with me.
 
 ## 4. Steps
 
@@ -121,7 +121,7 @@ Delegation follows your rule: subagents only for independent pieces whose answer
 
 ### S9 · Static + unit verification pass (rows 1–7)
 Run everything cheap, all at once, paste raw output:
-`claude plugin validate --strict` on the root, `skills/`, `agents/`; `claude --plugin-dir . plugin details testsprite` (5 skills, 2 agents, SessionStart/PreToolUse/Stop, ≤ 400 tokens); `node --test`; flag-trace; `secret_scan.sh`; `sh -n hooks/*.sh`; a grep that `/Users/mac`, `sources/`, and key-shaped strings appear nowhere in tracked files. Any red row → one plain rerun, then up to three fixes each with a new hypothesis (your stuck-row rule).
+`claude plugin validate --strict` on the root, `skills/`, `agents/`; `claude --plugin-dir . plugin details testsprite` (5 skills, 2 agents, SessionStart/PreToolUse/Stop, ≤ 400 tokens); `node --test`; flag-trace; `secret_scan.sh`; `sh -n hooks/*.sh`; a grep that `/Users/mac`, `sources/`, and key-shaped strings appear nowhere in tracked files. Any red row → one plain rerun, then up to three fixes each with a new hypothesis (the stuck-row rule).
 
 ### S10 · Live verification (row 8) and the free spikes
 - **Sessions** (guardrail env, fixtures copied to temp dirs): `claude --plugin-dir . -p "/testsprite:init"` in `mcp-ts-stdio` → expect "fit: none" with the "Do instead" block and **no** `testsprite project|test` command in the tool calls (read from `--output-format stream-json`); in `web-vite` → expect state/detect first, stop at the auth step, no cloud command; `cli-go-cobra` → none. A linked fixture with a deliberate `testsprite test run --all` → guard `ask` appears.
@@ -140,7 +140,7 @@ Run everything cheap, all at once, paste raw output:
 4. `claude plugin tag --push` (creates `testsprite--v0.1.0`).
 5. **Fresh-clone install test:** `git clone` to a temp dir; with `CLAUDE_CONFIG_DIR=$(mktemp -d)` run `claude plugin marketplace add yigitkonur/plugin-testsprite`, `claude plugin install testsprite@plugin-testsprite`, `claude plugin details testsprite`; confirm the same 5/2/3 inventory and token figure as S9.
 6. **Rerun the whole ledger once** (rows 1–8 against the published commit). A row that fails here is a failed row again.
-7. Final report in your format: ledger with pasted `saw` values, what changed vs the docs, what is OPEN or UNVERIFIED.
+7. Final report: ledger with pasted `saw` values, what changed vs the docs, what is OPEN or UNVERIFIED.
 
 ## 5. Step → ledger row map
 
@@ -168,6 +168,6 @@ Run everything cheap, all at once, paste raw output:
 | A subagent returns code that passes its own tests but misses a doc-04 signal | I run every fixture myself and compare to the verdict table before any golden is recorded |
 | Scope creep (`sprite-run`, per-project settings, Windows) | Out by D4/D7 and Q8/Q9; recorded under "not in 0.1.0" in `CHANGELOG.md` |
 
-## 7. What I will not do without a new yes from you
+## 7. What the build will not do without a new yes from the maintainer
 
-Run any TestSprite command that needs a key or reaches its cloud (including the Q3 spike); install the official skills or run `testsprite setup`; touch your `~/.claude` settings or install the plugin into your real profile (install tests use a throwaway `CLAUDE_CONFIG_DIR`); publish to npm or submit to Anthropic's directory; spend past the step-10 model-usage cap.
+Run any TestSprite command that needs a key or reaches its cloud (including the Q3 spike); install the official skills or run `testsprite setup`; touch the maintainer's `~/.claude` settings or install the plugin into their real profile (install tests use a throwaway `CLAUDE_CONFIG_DIR`); publish to npm or submit to Anthropic's directory; spend past the step-10 model-usage cap.

@@ -1,0 +1,5 @@
+schema_version: "1.1"
+name: 02-go-cli-no-project
+tags: [fit]
+context:
+  scaffold_script: fixture.sh

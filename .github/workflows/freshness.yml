@@ -1,0 +1,41 @@
+name: freshness
+on:
+  schedule:
+    - cron: "23 5 * * *"
+  workflow_dispatch:
+permissions:
+  contents: read
+  issues: write
+jobs:
+  cli-drift:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install the newest published CLI (help only; no credentials)
+        run: |
+          mkdir /tmp/cli && cd /tmp/cli && npm init -y >/dev/null
+          npm install --ignore-scripts --no-audit --no-fund @testsprite/testsprite-cli@latest
+          echo "$PWD/node_modules/.bin" >> "$GITHUB_PATH"
+      - name: Capture its surface
+        run: python3 -I scripts/capture_cli_help.py --out /tmp/fresh
+      - name: Plugin text still traces to the newest CLI
+        id: trace
+        continue-on-error: true
+        run: python3 -I scripts/flag_trace.py --pinned /tmp/fresh
+      - name: Removed or renamed commands and flags
+        id: drift
+        continue-on-error: true
+        run: python3 -I scripts/drift_check.py /tmp/fresh | tee /tmp/drift.txt
+      - name: Open an issue on drift
+        if: steps.trace.outcome == 'failure' || steps.drift.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ -z "$(gh issue list --state open --search 'CLI drift in:title' --json number --jq '.[0].number')" ]; then
+            gh issue create --title "CLI drift: the newest TestSprite CLI no longer matches the pinned surface" \
+              --body "$(printf 'The nightly canary found commands or flags the plugin cites that are gone from the newest CLI.\n\n```\n%s\n```\n\nSee scripts/drift_check.py and AGENTS.md for how to refresh ci/pinned/.' "$(cat /tmp/drift.txt)")"
+          fi
+          exit 1

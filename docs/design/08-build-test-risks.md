@@ -6,13 +6,13 @@ Source keys and evidence tags: see `README.md`. Effort figures are **[I]** estim
 
 | Phase | Build | Exit criteria (all must hold) | Est. |
 |---|---|---|---|
-| **0 · Spikes** | (a) *Free*: throwaway skeleton plugin in `$TMPDIR` to resolve the Claude Code unknowns U5–U8 (§2). (b) *Free*: `command -v sprite-*` collision check. (c) *Needs your OK, ≤ 5 credits*: resolve U1–U4, U9 against a throwaway project (§3). | Every U-tag in doc 09 is closed, or re-tagged with a reason it stays open. Docs 01/04/06/07 updated with the answers. | 1–2 d |
+| **0 · Spikes** | (a) *Free*: throwaway skeleton plugin in `$TMPDIR` to resolve the Claude Code unknowns U5–U8 (§2). (b) *Free*: `command -v sprite-*` collision check. (c) *Needs the maintainer's OK, ≤ 5 credits*: resolve U1–U4, U9 against a throwaway project (§3). | Every U-tag in doc 09 is closed, or re-tagged with a reason it stays open. Docs 01/04/06/07 updated with the answers. | 1–2 d |
 | **1 · Knowledge + helpers** | Manifest; `testsprite` skill + `references/`; `sprite-detect` (+ 17 fixture repos with golden JSON); `sprite-state`; `sprite-ref`; `scripts/check-flags.py` | `claude plugin validate --strict` passes; `claude plugin details` always-on ≤ 400 tokens (347 measured on the doc-05 skeleton); detect goldens green; flag-trace green against pinned 0.15.x | 2–3 d |
-| **2 · Workflows + agents** | `init` (hand-author path first, then generate path), `verify`, `audit`; `coverage-auditor`, `failure-triager`; `sprite-run` **only if** dogfood shows truncation losses | Dogfood on 3 of your own repos (one web, one HTTP API, one MCP/CLI repo that must end in an honest "none"); eval cases 1–4, 7–9 beat baseline by Δ ≥ +0.3 | 3–4 d |
+| **2 · Workflows + agents** | `init` (hand-author path first, then generate path), `verify`, `audit`; `coverage-auditor`, `failure-triager`; `sprite-run` **only if** dogfood shows truncation losses | Dogfood on 3 real repos (one web, one HTTP API, one MCP/CLI repo that must end in an honest "none"); eval cases 1–4, 7–9 beat baseline by Δ ≥ +0.3 | 3–4 d |
 | **3 · Hooks** | 3a `SessionStart`; 3b guard; 3c Stop gate — in that order, each with stdin-fixture tests | Fixture suite green; median hook latency < 50 ms (`claude --debug`); a week of dogfood with < 1 false-positive Stop block in 20 stops; guard and Stop gate switchable off; `SessionStart` is silent unless the repo is linked (no switch in v0.1, Q17) | 2 d |
 | **4 · `ci` skill** | `ci` workflow; nightly option; non-GitHub honest path | Workflow proven on a throwaway repo PR (non-draft); `schedule` path shown with guard | 1 d |
 | **5 · Evals + CI for the plugin repo** | Full `evals/` suite; GitHub Actions: validate, details budget, flag-trace, hook fixtures, **nightly drift canary** (§4.5) | Green on `main`; canary issue-opening tested | 1–2 d |
-| **6 · Publish** | `.claude-plugin/marketplace.json`, README, `claude plugin tag`, version-bump rule | Install from your marketplace in a clean profile; `/testsprite:init` runs on a fixture | 0.5 d |
+| **6 · Publish** | `.claude-plugin/marketplace.json`, README, `claude plugin tag`, version-bump rule | Install from the repo's own marketplace in a clean profile; `/testsprite:init` runs on a fixture | 0.5 d |
 
 Rule carried from the SwiftUI plugin: **bump `version` in the same commit as any shipped change** or nobody receives the fix. [V SWUI:AGENTS.md]
 Build order logic: knowledge and detection first (no hooks, no spend, immediately useful), workflows next, hooks last — hooks are the part most able to annoy, so they are added only once there is a baseline to measure them against.
@@ -30,9 +30,9 @@ Build order logic: knowledge and detection first (no hooks, no spend, immediatel
 | — | `if: Bash(testsprite *)` skips spawn for other Bash commands; compound commands; `npx` forms | `--debug` log of matched/unmatched | Spec: best-effort [V SPEC:hooks.md:450] |
 | — | Exit-1 truncation: how big must a failing output be before evidence is lost? | `sprite-run` prototype vs raw, on real `test run --all` output | [V SPEC:tools-reference.md:166-176] numbers; the *TestSprite* output sizes are unmeasured |
 
-## 3. Phase 0c — the credit spike (needs your explicit OK; nothing is run before)
+## 3. Phase 0c — the credit spike (needs the maintainer's explicit OK; nothing is run before)
 
-Budget ≤ 5 credits on a **throwaway project** in your own workspace, deleted afterward (`project delete --confirm`, which the guard will ask about). Targets: a tiny public static page (FE) and a public echo-style HTTP API you control (BE, MCP-over-HTTP).
+Budget ≤ 5 credits on a **throwaway project** in a dedicated workspace, deleted afterward (`project delete --confirm`, which the guard will ask about). Targets: a tiny public static page (FE) and a public echo-style HTTP API you control (BE, MCP-over-HTTP).
 
 | ID | Question | Experiment | Max spend |
 |---|---|---|---|
@@ -89,19 +89,19 @@ A scheduled workflow installs `@testsprite/testsprite-cli@latest`, reruns `tools
 This directly addresses the main risk (§5, R1).
 
 ### 4.6 Dogfood
-Three real repos for two weeks on a small credit budget; record: guard asks (right/wrong), Stop blocks (right/wrong), triager accuracy vs your own judgment, token cost (`claude plugin details` + `/skill-doctor`). `/skill-doctor` flags skills that are in the listing but never invoked. [V SPEC:plugins_measure.md]
+Three real repos for two weeks on a small credit budget; record: guard asks (right/wrong), Stop blocks (right/wrong), triager accuracy vs the maintainer's own judgment, token cost (`claude plugin details` + `/skill-doctor`). `/skill-doctor` flags skills that are in the listing but never invoked. [V SPEC:plugins_measure.md]
 
 ## 5. Risks
 
 | # | Risk | Likelihood · impact | Mitigation |
 |---|---|---|---|
-| R1 | **CLI velocity**: 11 releases in 3 months since the 0.4.0 your skills pin; flags and shapes change; your 0.4.0 skills are the cautionary tale | high · high | Never restate flags; `sprite-ref` reads the installed CLI's own guidance; flag-trace in CI; nightly canary; version banner; JSON contract is "additive only" so shape-probing helpers stay safe [V CLID:reference/whats-included] |
+| R1 | **CLI velocity**: 11 releases in 3 months since the 0.4.0 the earlier skills pin; flags and shapes change; those 0.4.0 skills are the cautionary tale | high · high | Never restate flags; `sprite-ref` reads the installed CLI's own guidance; flag-trace in CI; nightly canary; version banner; JSON contract is "additive only" so shape-probing helpers stay safe [V CLID:reference/whats-included] |
 | R2 | Unresolved platform unknowns (U1–U4) make backend guidance wrong | medium · high | Phase 0c before Phase 2; until closed, backend guidance is tagged and conservative (explicit `BASE_URL`, explicit teardown, no reliance on cleanup or injected URL) |
 | R3 | Hooks annoy or slow sessions | medium · medium | Silent when unlinked; `if` filter ⇒ zero spawns elsewhere; never `allow`; one block per change set; switches for the guard and the Stop gate in `userConfig` (SessionStart emits nothing unless linked); measured latency budget |
 | R4 | Vendor overlap/obsolescence: the CLI now ships three skills and keeps adding; could ship a plugin | medium · medium | The plugin's durable value is what prose files cannot do: detection + fit honesty, audit, enforcement hooks, subagents. Content defers to the installed CLI. Coexistence is supported (flag duplicates; don't delete) |
 | R5 | Claude Code spec drift (`plugin eval` is early access; `if` best-effort; `userConfig` rules strict) | medium · medium | `validate --strict` in CI; documented minimums; hooks fail open |
 | R6 | Credits burned during development | low · medium | Evals are network-sandboxed with no credentials; hooks/helpers tested on fixtures; one explicit, capped spike; throwaway project |
-| R7 | Honest-fit verdict feels unhelpful on stdio MCP / CLI repos (most of your projects) | high · low | It is the correct answer. The value delivered is the "do instead" path and the HTTP-transport route; the plugin never blocks anything, it just refuses to create cloud state for a repo that cannot use it |
+| R7 | Honest-fit verdict feels unhelpful on stdio MCP / CLI repos (most MCP-server and CLI-tool repos) | high · low | It is the correct answer. The value delivered is the "do instead" path and the HTTP-transport route; the plugin never blocks anything, it just refuses to create cloud state for a repo that cannot use it |
 | R8 | Misdetection by `sprite-detect` | medium · low | Prints evidence; reports ambiguity rather than guessing; 17 goldens; user can override with an argument |
 | R9 | Listing-cost creep as skills are added | medium · low | Budget gate in CI (≤ 400 tokens; 347 measured); user-only skills still show ~20–40 tokens each in `plugin details`, so keep them short |
 | R10 | Exit-1 output truncation hides evidence | medium · medium | Capture-to-file rule; `sprite-run` if measured; bundles already write to disk via `--out` |
@@ -117,7 +117,7 @@ Three real repos for two weeks on a small credit budget; record: guard asks (rig
 |---|---|---|---|
 | Q1 | Should the plugin **supersede** the three official skills (credentials via `setup --no-agent`, nudge silenced) or **coexist** with them? | **Supersede**; detect and flag duplicates, never delete files the plugin did not write | SessionStart env export, guard class E, `ts-ref` |
 | Q2 | Plugin name | `testsprite` (gives `/testsprite:init`), described as unofficial; alternative `testsprite-agent` | namespace of every slash command |
-| Q3 | May I spend ≤ 5 credits on a throwaway project to close U1–U4/U9 before Phase 2? | **Yes, once, capped**; nothing is run without your go-ahead | whether backend guidance is final or provisional |
+| Q3 | Spend ≤ 5 credits on a throwaway project to close U1–U4/U9 before Phase 2? | **Yes, once, capped**; nothing is run without the maintainer's go-ahead | whether backend guidance is final or provisional |
 | Q4 | Claude Code only, or also a Codex package like the SwiftUI plugin? | **Claude Code only** | packaging, `agents/openai.yaml` |
 | Q5 | Windows in v0.1? | **No** | hook shell choice, `bin/` shims |
 | Q6 | Stop gate on by default in linked repos? | **On, soft**, after the dogfood false-positive check | `userConfig.stop_gate` default |
@@ -130,5 +130,5 @@ Three real repos for two weeks on a small credit budget; record: guard asks (rig
 | Q13 | Ship the MCP-over-HTTP template before U9 passes? | **Ship as "experimental"**, clearly tagged | `authoring-backend` reference |
 | Q14 | Non-GitHub CI | **Generic recipe only** (no provider YAML promises) | `ci` skill scope |
 | Q15 | Agent models | **`sonnet`** for both | agent frontmatter |
-| Q16 | Marketplace/host and license | Your GitHub, **MIT** (as your other plugins) | `plugin.json`, marketplace |
+| Q16 | Marketplace/host and license | The maintainer's GitHub, **MIT** (as the maintainer's other plugins) | `plugin.json`, marketplace |
 | Q17 | Should `SessionStart` context have its own `userConfig` switch? | **No** in v0.1: it is silent in unlinked repos, and in linked repos its ~100 tokens are the point; disabling the plugin removes it. Revisit if dogfood finds it noisy | `userConfig` surface |

@@ -1,0 +1,1 @@
+{"runId":"run_d4e5f6","testId":"test_profile_02","projectId":"proj_demo","type":"frontend","verdict":"failed","snapshotId":"snap_0002","plannedActions":6,"recordedActions":6,"cause":"After saving the profile the display name field renders read-only and still shows the old name","failingStep":6}

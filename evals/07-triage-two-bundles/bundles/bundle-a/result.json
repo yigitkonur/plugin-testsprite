@@ -1,0 +1,1 @@
+{"runId":"run_a1b2c3","testId":"test_checkout_01","projectId":"proj_demo","type":"frontend","verdict":"failed","snapshotId":"snap_0001","plannedActions":9,"recordedActions":4,"cause":"Could not locate the target element after repeated attempts","failingStep":5}

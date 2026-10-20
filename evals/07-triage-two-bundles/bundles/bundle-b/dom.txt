@@ -1,0 +1,3 @@
+<form><label>Display name</label>
+<input name="displayName" value="Grace H." readonly>
+<div class="toast">Profile updated</div></form>

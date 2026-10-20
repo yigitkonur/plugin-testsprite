@@ -1,0 +1,8 @@
+[
+ {"i":1,"action":"navigate","target":"/settings/profile","ok":true},
+ {"i":2,"action":"type","target":"input 'Display name'","value":"Ada Lovelace","ok":true},
+ {"i":3,"action":"click","target":"button 'Save changes'","ok":true},
+ {"i":4,"action":"assert","target":"toast 'Profile updated'","ok":true},
+ {"i":5,"action":"reload","ok":true},
+ {"i":6,"action":"assert","target":"input 'Display name' value == 'Ada Lovelace'","ok":false,"observed":"value 'Grace H.' (field is read-only)"}
+]

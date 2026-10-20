@@ -182,7 +182,7 @@ reads bundles in a subagent (doc 05).
 Honest gap: step 3 does not say *how `login.py` hands `auth_token` to the next test*. The CLI declares the dependency;
 the Python-side mechanism is not in any document I could read **[U1]**. The first spike in doc 08 resolves it.
 
-## 10. Your pre-research claims, checked
+## 10. Pre-research claims, checked
 
 | Claim | Verdict |
 |---|---|

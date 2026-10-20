@@ -10,7 +10,7 @@ fit gate in `/testsprite:init` and `/testsprite:audit`.
 - **Frontend:** a web app at a public URL, or at `localhost:<port>` through a tunnel (V3 accounts, FE only). [V HELP:test-run `--local`]
 - **Backend:** an HTTP API at a **public URL written into the test**. `--local` is rejected for backend. [V VERIFY:26-34; HELP:test-run; scaffold comment "must be reachable from the internet"]
 - **Generation vs hand-authoring.** Proposal generation (`plan generate`) is REST-first; GraphQL is "best-effort"; gRPC and JSON-RPC are "not supported"; WebSocket is not mentioned. [V WEB:core/api/api-discovery] But a **hand-authored backend test is arbitrary Python over HTTP** (`requests`), so anything with an HTTP surface is testable by hand even where generation does not apply. [V VERIFY:183-206]
-- **Worth the credits** only when the test sees a *deployed-boundary* fact native tests cannot (real network, auth, proxies, CORS, SSE, cold start, real browser). This is the test your own backend skill already used; it is kept. [V MINE-BE "Value boundary"]
+- **Worth the credits** only when the test sees a *deployed-boundary* fact native tests cannot (real network, auth, proxies, CORS, SSE, cold start, real browser). This is the test the author's earlier backend skill already used; it is kept. [V MINE-BE "Value boundary"]
 
 ## 2. Verdict table
 
@@ -164,7 +164,7 @@ TestSprite fit: none  (MCP server, stdio transport only)
 Why: TestSprite runs in the cloud and can only call a URL. A stdio server has no network surface.
 Do instead (free, faster, and more accurate for this kind of repo):
   1. In-process or spawned-stdio client tests with your MCP SDK's client against the real server binary.
-  2. An MCP inspector / CLI client for black-box tool calls.   (you already have a tools-by-CLI test approach)
+  2. An MCP inspector / CLI client for black-box tool calls.
 If you want TestSprite's external check later: add an HTTP transport, host it behind auth on staging, then run /testsprite:init.
 ```
 

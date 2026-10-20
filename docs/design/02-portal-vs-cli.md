@@ -74,7 +74,7 @@ site > portal docs > tutorials.
 | "The CLI does not support `localhost` targets; use the MCP server" (7 pages) | `--local <port>` + `tunnel` + `project create --local` exist (V3, FE only) | docs: `cli/concepts/the-agent-loop.md:106`, `cli/core/projects.md:92`, `cli/core/running-tests.md:103`, `cli/troubleshooting/common-issues.md:34`, `cli/getting-started/overview.md:131`, `cli/getting-started/quickstart-for-agents.md:166`, `cli/core/projects.md:68` · truth: HELP:test-run `--local`; CHG 0.13.0/0.14.0 |
 | Test Lists and schedule reads are "on the roadmap" | Shipped: `testlist`, `schedule` | `cli/reference/whats-included.md:116-117` · HELP:testlist, HELP:schedule |
 | `ci run`, `ci init`, `testlist`, `schedule create`, `--local` | Zero mentions in all 22 CLI doc pages | `grep` over `sources/docs/cli` |
-| Doctor sample shows CLI `0.3.0` | Current is 0.15.0 (11 releases in 3 months since the 0.4.0 your skills pin) | `cli/reference/command-reference.md:111` · CHG |
+| Doctor sample shows CLI `0.3.0` | Current is 0.15.0 (11 releases in 3 months since the 0.4.0 the earlier skills pin) | `cli/reference/command-reference.md:111` · CHG |
 | Exit codes table has no `13` (feature gated) | Exit 13 exists | `cli/reference/exit-codes.md` (no match) · DOC:1519-1537 |
 | Cancelling gives "No refund" | V3 FE run cancelled before terminal: original charge returned (attempted; read `refund.status`); BE/V2 keep billing | `cli/core/cancelling-runs.md:69` · HELP:test-cancel |
 | `--target-url` "not applied on V3-routed accounts" | CHG 0.13.0: `--target-url` supported for run-time FE targets; used by `ci run` | `cli/reference/command-reference.md:489` · CHG 0.13.0 |
@@ -86,9 +86,9 @@ site > portal docs > tutorials.
 | Topic | Source A | Source B | Plan treats as |
 |---|---|---|---|
 | Does auto-heal overwrite stored code? | HELP:test-rerun: "the agent re-authors the test and the new code replaces the stored version" | WEB:core/ui/auto-heal: "doesn't overwrite it unless you explicitly save" | **[U3]**; plugin never counts heal-pass as proof and diffs `codeVersion` before/after |
-| `TARGET_URL` injected into BE tests? | VERIFY:188 and :226 use `{TARGET_URL}` | scaffold in the CLI hard-codes `BASE_URL = "https://staging.example.com"`; `ci run` help: "Backend tests use the URL in their own code, not --target-url"; your skill distrusts it | **[U2]**; plugin templates use explicit `BASE_URL` |
+| `TARGET_URL` injected into BE tests? | VERIFY:188 and :226 use `{TARGET_URL}` | scaffold in the CLI hard-codes `BASE_URL = "https://staging.example.com"`; `ci run` help: "Backend tests use the URL in their own code, not --target-url"; the author's earlier skill distrusts it | **[U2]**; plugin templates use explicit `BASE_URL` |
 | API endpoint list after creation | WEB:api-discovery: "locked", re-extract replaces | CLI `docs upload --role api-doc` on an existing project | **[U]** whether a later upload adds endpoints |
-| Smart Rerun, "Create test: three paths" | Mentioned in your brief | Absent from all 73 pages | Treated as marketing; not designed around |
+| Smart Rerun, "Create test: three paths" | Mentioned in the project brief | Absent from all 73 pages | Treated as marketing; not designed around |
 
 ## 6. What the five tutorials actually demonstrate
 
