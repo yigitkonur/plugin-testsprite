@@ -1,6 +1,6 @@
 ---
 name: testsprite
-description: Use for TestSprite CLI work: projects, tests, runs, failures; writing test plans or backend test code; deciding whether TestSprite fits a repo (web, HTTP API, MCP server, CLI tool).
+description: Use for TestSprite CLI work: projects, tests, runs, failures, CI gates; writing test plans or backend test code; deciding whether TestSprite fits a repo (web, HTTP API, MCP server, CLI tool).
 ---
 
 # TestSprite
@@ -35,7 +35,7 @@ This plugin is unofficial. It adds judgment on top of the CLI and never restates
 | write backend test code (REST, GraphQL, MCP over HTTP) | [authoring-backend](references/authoring-backend.md) and `templates/` |
 | read a red run | [triage](references/triage.md) |
 | something only the web portal can do | [portal-handoffs](references/portal-handoffs.md) |
-| gate pull requests or schedule a nightly run | [ci-shapes](references/ci-shapes.md) |
+| gate pull requests or schedule a nightly run (`ci init` generates GitHub Actions only; other CI gets a generic recipe) | [ci-shapes](references/ci-shapes.md) |
 | need exact flags or output shapes | [cli-surface](references/cli-surface.md) |
 
 ## Workflows

@@ -1,0 +1,5 @@
+schema_version: "1.1"
+name: 10-run-all-announces-cost
+tags: [cost]
+context:
+  scaffold_script: fixture.sh

@@ -22,7 +22,9 @@ try {
 
   const files = new Set();
   if (session.head) for (const f of (git(root, ['diff', '--name-only', `${session.head}..HEAD`]) || '').split('\n')) if (f) files.add(f);
-  for (const f of (git(root, ['ls-files', '-m', '-o', '--exclude-standard']) || '').split('\n')) {
+  // untracked listing is capped: a repo with no .gitignore and an installed node_modules would otherwise stat thousands of files on every stop
+  const dirty = [...(git(root, ['ls-files', '-m']) || '').split('\n'), ...(git(root, ['ls-files', '-o', '--exclude-standard']) || '').split('\n').slice(0, 3000)];
+  for (const f of dirty) {
     if (!f) continue;
     try { if (fs.statSync(path.join(root, f)).mtimeMs > session.startedAt) files.add(f); } catch { /* deleted */ }
   }

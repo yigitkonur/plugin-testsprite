@@ -206,3 +206,11 @@ test('Stop gate: committed changes since the baseline count too', () => {
   execFileSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@t', 'commit', '-qam', 'change'], { cwd: x.d });
   assert.equal(JSON.parse(stop(x).out).decision, 'block');
 });
+test('Stop gate: a tracked change is still seen when thousands of untracked files exist, and it stays fast', () => {
+  const x = stopSetup(); edit(x.d, 'src/a.ts', 'changed');
+  fs.mkdirSync(path.join(x.d, 'node_modules'));
+  for (let i = 0; i < 3500; i++) fs.writeFileSync(path.join(x.d, 'node_modules', `f${i}.js`), 'x');
+  const t0 = Date.now(); const r = stop(x); const ms = Date.now() - t0;
+  assert.equal(JSON.parse(r.out).decision, 'block');
+  assert.ok(ms < 2000, `took ${ms} ms`);
+});

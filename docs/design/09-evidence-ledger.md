@@ -102,8 +102,8 @@ Source keys: see `README.md`. All paths are under `sources/`. Line numbers refer
 | U2 | Is `TARGET_URL` injected into BE tests? (vendor example uses it; vendor scaffold hard-codes `BASE_URL`) | templates | Credit spike | 0.2 |
 | U3 | Does FE auto-heal overwrite stored code? CLI help says yes ("replaces the stored version"); portal says no | `verify`, `audit` step 7 | Credit spike: compare `codeVersion` before/after a heal | 1.5 |
 | U4 | Does Auto Cleanup cover CLI-authored BE tests? | teardown guidance | Credit spike | 0.4 |
-| U5 | The exact `agent_type` string for a plugin subagent in `PreToolUse`; presence of `run_in_background` in `tool_input` (spec says present) | guard read-only enforcement | Free spike (doc 08 §2) | 0 |
-| U6 | Does `` !`cmd` `` run when the *model* invokes a skill? (spec: before Claude sees it; SwiftUI plugin observed no) | `verify` design (already independent of it) | Free spike | 0 |
+| U5 | The exact `agent_type` string for a plugin subagent in `PreToolUse`; presence of `run_in_background` in `tool_input` (spec says present) | guard read-only enforcement | **Resolved for `agent_type` (build spike, Claude Code 2.1.302):** a throwaway plugin `spike` with agent `probe` logged `agent_type: "spike:probe"` and an `agent_id` in the `PreToolUse` input, so the guard matches `<plugin>:<agent>` as well as the bare name. `run_in_background` still unobserved | 0 |
+| U6 | Does `` !`cmd` `` run when the *model* invokes a skill? (spec: before Claude sees it; SwiftUI plugin observed no) | `verify` design (already independent of it) | **Resolved (build spike, 2.1.302):** it runs on both paths. A user-invoked skill and a model-invoked skill (via the Skill tool) each returned their `echo` marker. The design keeps `verify` independent of it anyway | 0 |
 | U7 | Does `paths:` keep a skill out of the always-on listing? | budget | Free spike (`claude plugin details`) | 0 |
 | U8 | `context: fork` + `background` default | **Moot**: `audit` is not forked | — | — |
 | U9 | Does a hand-rolled MCP streamable-HTTP test work in the requests-only sandbox incl. SSE? (template in doc 04 §6 is from the MCP transport as I know it, **not** from a file in `sources/`) | doc 04 §6, Q13 | Credit spike | 0.4 |
@@ -156,6 +156,11 @@ Everything *not* a `testsprite` command/flag (helpers `sprite-*`, hook payloads,
 | C13 | `claude plugin validate` checks hooks | It checks manifest + skills/agents/commands frontmatter only (S21) | Hooks are verified by loading (`plugin details`, `--debug`) |
 | C14 | The first trace checker passed typos | A mistyped subcommand under a valid group (`test rurn`) was treated as a positional argument | Checker fixed to require a real subcommand under group commands; re-run <!-- trace:ignore --> |
 | C15 | "15 releases in 3 months" (said in my plan summary and early drafts) | npm registry: 17 versions since 2026-06-10; **11 published after 0.4.0** (0.5.0–0.15.0, 2026-07-17 → 2026-10-19) | Corrected to 11 in docs 02, 03, 05, 08, README; the conclusion (CLI velocity is the top risk) stands |
+
+| C16 | `agent_type` for a plugin subagent might be the bare agent name | Observed `spike:probe` (`<plugin>:<agent>`) in a real `PreToolUse` payload (U5) | Guard regex matches both forms; test covers `testsprite:failure-triager` |
+| C17 | `` !`cmd` `` may not run when the model invokes a skill (SwiftUI plugin's note) | It ran on both paths in 2.1.302 (U6) | No design change; `verify` still collects state itself |
+| C18 | Hook latency estimates: SessionStart about 30 ms, guard 25-40 ms | `claude --debug` in a live linked-repo session: SessionStart 134 ms in-session (50 ms standalone when linked, 20 ms when not), guard 43-58 ms, Stop prefilter 7 ms | Estimates replaced by measurements in doc 06 |
+| C19 | (build) The first commit in the new repository carried a personal email address as author | Caught by inspection before anything was pushed; identity reset to the GitHub noreply address | `scripts/secret_scan.sh` now fails on any commit identity that is not a noreply address |
 
 ## 5. Relayed from research subagents and only spot-checked by me
 

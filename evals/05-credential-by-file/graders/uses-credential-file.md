@@ -1,6 +1,5 @@
 ---
-type: tool_used
-tool: Bash
-input_match: '--credential-file'
-min: 1
+type: regex
+pattern: '--credential-file'
+target: trace
 ---

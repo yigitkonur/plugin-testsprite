@@ -171,3 +171,34 @@ Run everything cheap, all at once, paste raw output:
 ## 7. What the build will not do without a new yes from the maintainer
 
 Run any TestSprite command that needs a key or reaches its cloud (including the Q3 spike); install the official skills or run `testsprite setup`; touch the maintainer's `~/.claude` settings or install the plugin into their real profile (install tests use a throwaway `CLAUDE_CONFIG_DIR`); publish to npm or submit to Anthropic's directory; spend past the step-10 model-usage cap.
+
+## 8. What actually happened (deviations and measurements)
+
+Written after the build; the sections above are the plan as it stood before.
+
+**Verification, as run** (Claude Code 2.1.302, CLI 0.15.0 from a throwaway prefix, no TestSprite key, `TESTSPRITE_API_URL` pointed at a dead local port):
+
+| Check | Result |
+|---|---|
+| `claude plugin validate --strict` on the manifest, marketplace, `skills/`, `agents/` | passed |
+| `claude plugin details testsprite` | 5 skills, 2 agents, hooks SessionStart / PreToolUse / Stop, always-on about 352 tokens (budget 400) |
+| `node --test tests/*.test.mjs` | 131 tests (detect 36, state and ref 15, hooks 80); a mutation of the guard and of the Stop gate each made the suite fail, then was reverted |
+| `scripts/flag_trace.py` | 155 `testsprite` command mentions, 0 problems; a planted bad flag and a bad subcommand were caught (exit 1) |
+| Live `/testsprite:init` in a stdio MCP fixture and a Go CLI fixture | printed `TestSprite fit: none` with the "do instead" list; zero `testsprite` commands; about 0.09 USD each |
+| Live `/testsprite:init` in a Vite fixture with no key | ran `testsprite auth status`, stopped at the credentials step, no project created |
+| Live "run all tests" in a linked fixture | `testsprite test run --all --wait` was stopped by the guard with its reason; the other calls failed on missing auth; nothing reached any cloud |
+| Live Stop gate (gate on) | blocked once with "Files changed under linked TestSprite project ... no TestSprite verdict is recorded"; the model answered "Unverified because ..." |
+| Hook latency in a live session | SessionStart 134 ms (50 ms standalone linked, 20 ms unlinked), guard 43-58 ms, Stop prefilter 7 ms |
+| `claude plugin eval` (10 cases, with-plugin vs no-plugin, 1 run per arm) | with the plugin 9 of 10 cases scored 1.00; mean delta +0.24 on the first complete pass; case 07 was an eval-infrastructure failure, fixed (see below) and rerun twice at 1.00 on both arms; combined mean delta about +0.3. Samples are tiny; read it as a smoke signal, not a measurement |
+
+**Deviations from the plan**
+
+- `stop_gate` ships **off** (D3), as planned; `sprite-run` was not built and `hooks.json` has two `if` entries instead of three (D4).
+- A `lib/` directory was added for code shared by the helpers and hooks (`session`, `shell-split`, `guard-rules`).
+- Three subagents built the detect helper, the state and ref helpers, and the eval cases. Their reports were not taken at face value: tests were rerun, the detect verdicts were tabulated from live output and compared with doc 04, and the hook tests were mutation-checked.
+- A live session showed the Stop gate taking 1.2 s in a repository with an installed `node_modules` and no `.gitignore` (thousands of untracked files). The untracked listing is now capped at 3,000 entries, tracked changes are listed separately and never capped, and a regression test covers it.
+- The first live guard session showed an awkward message ("`test run` --all ..."); fixed.
+- Eval fixes driven by the first pass: the model-invocable skill description gained "CI gates" (a CI request did not trigger it; +5 always-on tokens) and the router row states that `ci init` generates GitHub Actions only; case 05 now greps the whole trace for `--credential-file` instead of requiring a Bash call; case 06's prompt names TestSprite; case 07 copies its bundles into the workspace (the `add_dirs` path was unreliable in the sandbox) and no longer requires an agent dispatch; the first run showed the model triaging small bundles itself, correctly.
+- Free spikes U5 and U6 were run and resolved; U7 and U14 were not needed for 0.1.0 and stay open. The credit spike (U1-U4, U9) was **not** run.
+- The first commit in the repository carried a personal email address as author. It was caught before anything was pushed and reset to the GitHub noreply identity; `scripts/secret_scan.sh` now fails on any other commit identity.
+- About 4 USD of model usage was spent on live sessions, spikes and evals, within the cap set in section 0.

@@ -1,7 +1,6 @@
 # 06 · Hooks: what each one prevents, why a skill cannot, what it costs — and what was rejected
 
-Source keys and evidence tags: see `README.md`. Hook facts cite `SPEC:hooks.md` (raw, 2026-10-20). Latency figures are **estimates [I]** to be
-measured in Phase 3; token figures come from the shapes defined here.
+Source keys and evidence tags: see `README.md`. Hook facts cite `SPEC:hooks.md` (raw, 2026-10-20). Latency figures were **estimates [I]** and are now **measured** in a live session (`claude --debug`, Claude Code 2.1.302): SessionStart 134 ms in-session in a linked repo (50 ms when run standalone; 20 ms when unlinked), guard 43-58 ms per testsprite command, Stop prefilter 7 ms when the gate is off. Token figures come from the shapes defined here.
 
 ## 0. The test every hook must pass
 
