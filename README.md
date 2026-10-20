@@ -40,6 +40,8 @@ claude plugin marketplace add yigitkonur/plugin-testsprite
 claude plugin install testsprite@plugin-testsprite
 ```
 
+Claude Code may note that three plugin settings are unset after install; the defaults apply (guard on, Stop gate off, confirm above 3 runs), and `/plugin configure testsprite@plugin-testsprite` changes them.
+
 Authenticate yourself: create a workspace key in the TestSprite portal and run `! testsprite setup --no-agent` (masked prompt). The plugin never reads, prints or asks for the key. Do not run `testsprite setup` without `--no-agent`: it installs the official skills this plugin replaces (the plugin silences the CLI's nag about that).
 
 ## Safety model
@@ -52,7 +54,7 @@ Authenticate yourself: create a workspace key in the TestSprite portal and run `
 
 ## Cost of having it installed
 
-About 350 tokens of always-on context (measured with `claude plugin details testsprite`: two model-invocable skills, two agents, three short user-only skill descriptions). Hooks add no model context except a short note in linked repos. Everything else loads when a skill or agent runs.
+About 230 to 350 tokens of always-on context, as reported by `claude plugin details testsprite` (about 230 for an installed copy, about 350 when loaded with `--plugin-dir`; the tool's own estimate, covering two model-invocable skills, two agents and three short user-only skill descriptions). Hooks add no model context except a short note in linked repos. Everything else loads when a skill or agent runs.
 
 ## What is not verified yet
 
