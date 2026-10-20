@@ -1,0 +1,17 @@
+{
+  "name": "plugin-testsprite",
+  "owner": { "name": "yigitkonur", "url": "https://github.com/yigitkonur" },
+  "metadata": {
+    "description": "Unofficial Claude Code plugin for the TestSprite CLI: init, audit, verify, CI, with honest fit checks and spend guards.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "testsprite",
+      "description": "Unofficial steering layer for the TestSprite CLI: set up a repo, audit coverage, verify changes before 'done', gate CI. Says plainly when a repo (stdio MCP server, CLI tool) is not a fit.",
+      "version": "0.1.0",
+      "author": { "name": "yigitkonur", "url": "https://github.com/yigitkonur" },
+      "source": "."
+    }
+  ]
+}

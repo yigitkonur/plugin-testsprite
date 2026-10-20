@@ -1,0 +1,88 @@
+(top)
+agent
+agent install
+agent list
+agent status
+auth
+auth remove
+auth status
+ci
+ci init
+ci run
+completion
+doctor
+project
+project auto-auth
+project create
+project credential
+project delete
+project docs
+project docs upload
+project env
+project env create
+project env delete
+project env get
+project env list
+project env set-default
+project env update
+project get
+project list
+project sign-in
+project sign-in get
+project sign-in set
+project update
+schedule
+schedule create
+schedule delete
+schedule get
+schedule list
+schedule run
+schedule run list
+schedule update
+setup
+test
+test artifact
+test artifact get
+test cancel
+test code
+test code get
+test code put
+test create
+test create-batch
+test delete
+test delete-batch
+test diff
+test failure
+test failure get
+test failure summary
+test flaky
+test get
+test lint
+test list
+test open
+test plan
+test plan accept
+test plan generate
+test plan put
+test rerun
+test result
+test run
+test scaffold
+test steps
+test update
+test wait
+testlist
+testlist add
+testlist create
+testlist delete
+testlist get
+testlist list
+testlist remove
+testlist run
+testlist update
+tunnel
+tunnel list
+tunnel start
+tunnel status
+tunnel stop
+usage

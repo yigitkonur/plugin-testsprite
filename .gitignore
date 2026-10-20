@@ -1,0 +1,8 @@
+node_modules/
+evals/results/
+.testsprite/tmp/
+.DS_Store
+*.local.*
+# the plugin manifest dir must ship even though a global gitignore may hide dot-dirs
+!.claude-plugin/
+!.github/

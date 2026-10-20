@@ -1,0 +1,441 @@
+(top)	--debug
+(top)	--dry-run
+(top)	--endpoint-url
+(top)	--help
+(top)	--output
+(top)	--profile
+(top)	--request-timeout
+(top)	--verbose
+(top)	--version
+agent	--help
+agent install	--dir
+agent install	--force
+agent install	--help
+agent install	--skill
+agent install	--target
+agent list	--help
+agent status	--dir
+agent status	--help
+auth	--help
+auth remove	--help
+auth status	--help
+ci	--help
+ci init	--env
+ci init	--force
+ci init	--help
+ci init	--path
+ci init	--project
+ci init	--repo
+ci init	--set-secret
+ci init	--timeout
+ci run	--all
+ci run	--allow-empty
+ci run	--env
+ci run	--execution-report-timeout
+ci run	--fail-on-skipped
+ci run	--filter
+ci run	--gh-output
+ci run	--help
+ci run	--idempotency-key
+ci run	--max-concurrency
+ci run	--no-execution-report
+ci run	--project
+ci run	--report
+ci run	--report-file
+ci run	--report-suite-name
+ci run	--skip-preflight
+ci run	--summary-file
+ci run	--target-url
+ci run	--timeout
+completion	--help
+doctor	--help
+project	--env
+project	--help
+project auto-auth	--client-id
+project auto-auth	--client-secret
+project auto-auth	--client-secret-file
+project auto-auth	--disable
+project auto-auth	--help
+project auto-auth	--idempotency-key
+project auto-auth	--inject
+project auto-auth	--inject-key
+project auto-auth	--login-body-template
+project auto-auth	--login-content-type
+project auto-auth	--login-method
+project auto-auth	--login-url
+project auto-auth	--method
+project auto-auth	--password
+project auto-auth	--password-file
+project auto-auth	--refresh-token
+project auto-auth	--refresh-token-file
+project auto-auth	--region
+project auto-auth	--scope
+project auto-auth	--token-endpoint
+project auto-auth	--token-path
+project auto-auth	--username
+project create	--description
+project create	--help
+project create	--idempotency-key
+project create	--instruction
+project create	--local
+project create	--name
+project create	--password
+project create	--password-file
+project create	--skip-preflight
+project create	--test-id-attributes
+project create	--type
+project create	--url
+project create	--username
+project credential	--credential
+project credential	--credential-file
+project credential	--help
+project credential	--idempotency-key
+project credential	--type
+project delete	--confirm
+project delete	--help
+project delete	--idempotency-key
+project docs	--help
+project docs upload	--help
+project docs upload	--idempotency-key
+project docs upload	--name
+project docs upload	--project
+project docs upload	--role
+project env	--help
+project env create	--help
+project env create	--idempotency-key
+project env create	--local
+project env create	--name
+project env create	--otp-channel
+project env create	--password
+project env create	--password-file
+project env create	--session-ttl
+project env create	--set-default
+project env create	--sign-in
+project env create	--skip-preflight
+project env create	--url
+project env create	--username
+project env create	--var
+project env delete	--confirm
+project env delete	--help
+project env delete	--idempotency-key
+project env get	--help
+project env list	--help
+project env set-default	--help
+project env set-default	--idempotency-key
+project env update	--clear-credentials
+project env update	--help
+project env update	--idempotency-key
+project env update	--local
+project env update	--password
+project env update	--password-file
+project env update	--rename
+project env update	--skip-preflight
+project env update	--url
+project env update	--username
+project env update	--var
+project get	--help
+project list	--columns
+project list	--help
+project list	--max-items
+project list	--no-header
+project list	--page-size
+project list	--starting-token
+project sign-in	--help
+project sign-in get	--env
+project sign-in get	--help
+project sign-in set	--env
+project sign-in set	--help
+project sign-in set	--idempotency-key
+project sign-in set	--mode
+project sign-in set	--password
+project sign-in set	--password-file
+project sign-in set	--session-ttl
+project sign-in set	--username
+project update	--clear-test-id-attributes
+project update	--help
+project update	--idempotency-key
+project update	--instruction
+project update	--local
+project update	--name
+project update	--password
+project update	--password-file
+project update	--skip-preflight
+project update	--test-id-attributes
+project update	--url
+project update	--username
+schedule	--help
+schedule create	--cron
+schedule create	--end
+schedule create	--env
+schedule create	--help
+schedule create	--idempotency-key
+schedule create	--name
+schedule create	--send-to
+schedule create	--start
+schedule create	--target-id
+schedule create	--target-type
+schedule create	--timezone
+schedule delete	--confirm
+schedule delete	--help
+schedule delete	--idempotency-key
+schedule get	--help
+schedule list	--columns
+schedule list	--help
+schedule list	--no-header
+schedule run	--help
+schedule run list	--columns
+schedule run list	--help
+schedule run list	--no-header
+schedule update	--cron
+schedule update	--end
+schedule update	--env
+schedule update	--help
+schedule update	--idempotency-key
+schedule update	--name
+schedule update	--pause
+schedule update	--resume
+schedule update	--send-to
+schedule update	--start
+schedule update	--timezone
+setup	--agent
+setup	--api-key
+setup	--dir
+setup	--force
+setup	--from-env
+setup	--help
+setup	--no-agent
+setup	--skip-if-configured
+setup	--yes
+test	--confirm
+test	--help
+test	--history
+test	--no-browser
+test	--output
+test	--run-id
+test	--timeout
+test artifact	--help
+test artifact get	--failed-only
+test artifact get	--help
+test artifact get	--out
+test cancel	--help
+test code	--help
+test code get	--help
+test code get	--out
+test code put	--code-file
+test code put	--dry-run
+test code put	--dry-run-simulate-error
+test code put	--expected-version
+test code put	--force
+test code put	--help
+test code put	--idempotency-key
+test code put	--language
+test create	--all
+test create	--category
+test create	--code-file
+test create	--description
+test create	--env
+test create	--help
+test create	--idempotency-key
+test create	--name
+test create	--needs
+test create	--no-wait
+test create	--plan-from
+test create	--plan-template
+test create	--priority
+test create	--produces
+test create	--project
+test create	--run
+test create	--skip-preflight
+test create	--step-timeout
+test create	--target-url
+test create	--timeout
+test create	--type
+test create	--wait
+test create-batch	--env
+test create-batch	--help
+test create-batch	--idempotency-key
+test create-batch	--max-concurrency
+test create-batch	--no-wait
+test create-batch	--plan-from-dir
+test create-batch	--plans
+test create-batch	--run
+test create-batch	--skip-preflight
+test create-batch	--target-url
+test create-batch	--timeout
+test create-batch	--wait
+test delete	--confirm
+test delete	--help
+test delete	--idempotency-key
+test delete-batch	--all
+test delete-batch	--confirm
+test delete-batch	--help
+test delete-batch	--project
+test delete-batch	--status
+test diff	--help
+test failure	--help
+test failure get	--failed-only
+test failure get	--help
+test failure get	--out
+test failure summary	--help
+test flaky	--help
+test flaky	--runs
+test flaky	--timeout
+test flaky	--until-fail
+test get	--help
+test lint	--help
+test lint	--plan-from
+test lint	--plan-from-dir
+test lint	--plans
+test lint	--steps
+test list	--columns
+test list	--created-from
+test list	--cursor
+test list	--env
+test list	--help
+test list	--max-items
+test list	--no-header
+test list	--page-size
+test list	--project
+test list	--starting-token
+test list	--status
+test list	--type
+test open	--help
+test open	--no-browser
+test plan	--help
+test plan accept	--help
+test plan accept	--idempotency-key
+test plan accept	--only
+test plan accept	--project
+test plan generate	--help
+test plan generate	--idempotency-key
+test plan generate	--project
+test plan generate	--timeout
+test plan put	--dry-run
+test plan put	--dry-run-simulate-error
+test plan put	--expected-step-count
+test plan put	--force
+test plan put	--help
+test plan put	--idempotency-key
+test plan put	--steps
+test rerun	--all
+test rerun	--allow-empty
+test rerun	--env
+test rerun	--filter
+test rerun	--gh-output
+test rerun	--help
+test rerun	--idempotency-key
+test rerun	--max-concurrency
+test rerun	--no-auto-heal
+test rerun	--no-wait
+test rerun	--project
+test rerun	--report
+test rerun	--report-file
+test rerun	--report-suite-name
+test rerun	--skip-dependencies
+test rerun	--skip-preflight
+test rerun	--skip-terminal
+test rerun	--status
+test rerun	--summary-file
+test rerun	--timeout
+test rerun	--wait
+test result	--columns
+test result	--cursor
+test result	--env
+test result	--help
+test result	--history
+test result	--include-analysis
+test result	--no-header
+test result	--no-rerun
+test result	--page-size
+test result	--rerun
+test result	--since
+test result	--source
+test run	--all
+test run	--allow-empty
+test run	--env
+test run	--filter
+test run	--gh-output
+test run	--help
+test run	--idempotency-key
+test run	--local
+test run	--local-host
+test run	--max-concurrency
+test run	--no-auto-heal
+test run	--no-cancel-on-interrupt
+test run	--no-wait
+test run	--project
+test run	--report
+test run	--report-file
+test run	--report-suite-name
+test run	--skip-preflight
+test run	--summary-file
+test run	--target-url
+test run	--timeout
+test run	--tunnel-client
+test run	--wait
+test scaffold	--force
+test scaffold	--help
+test scaffold	--out
+test scaffold	--type
+test steps	--help
+test steps	--max-items
+test steps	--page-size
+test steps	--run-id
+test steps	--starting-token
+test update	--category
+test update	--clear-step-timeout
+test update	--description
+test update	--help
+test update	--idempotency-key
+test update	--name
+test update	--needs
+test update	--priority
+test update	--produces
+test update	--step-timeout
+test wait	--help
+test wait	--max-concurrency
+test wait	--timeout
+testlist	--help
+testlist add	--help
+testlist add	--idempotency-key
+testlist create	--help
+testlist create	--idempotency-key
+testlist create	--name
+testlist create	--project-env
+testlist delete	--confirm
+testlist delete	--dry-run
+testlist delete	--help
+testlist delete	--idempotency-key
+testlist get	--help
+testlist list	--columns
+testlist list	--help
+testlist list	--no-header
+testlist remove	--help
+testlist remove	--idempotency-key
+testlist run	--case
+testlist run	--gh-output
+testlist run	--help
+testlist run	--idempotency-key
+testlist run	--max-concurrency
+testlist run	--no-wait
+testlist run	--report
+testlist run	--report-file
+testlist run	--report-suite-name
+testlist run	--skip-preflight
+testlist run	--summary-file
+testlist run	--timeout
+testlist run	--wait
+testlist update	--clear-project-env
+testlist update	--help
+testlist update	--idempotency-key
+testlist update	--name
+testlist update	--project-env
+tunnel	--help
+tunnel list	--help
+tunnel start	--help
+tunnel start	--ttl
+tunnel status	--help
+tunnel stop	--all
+tunnel stop	--confirm
+tunnel stop	--help
+usage	--help
