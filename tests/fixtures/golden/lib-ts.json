@@ -1,0 +1,35 @@
+{
+  "root": "<root>",
+  "git": {
+    "head": null
+  },
+  "testsprite": {
+    "workflow": null,
+    "skills": []
+  },
+  "units": [
+    {
+      "path": ".",
+      "languages": [
+        "typescript"
+      ],
+      "kinds": [
+        "library"
+      ],
+      "evidence": [
+        "field:main"
+      ],
+      "deploy": [],
+      "testsprite": null,
+      "fit": {
+        "verdict": "none",
+        "needs": [],
+        "next": "stop",
+        "notes": [
+          "library: no network surface; test a demo/docs site if there is one"
+        ]
+      }
+    }
+  ],
+  "warnings": []
+}

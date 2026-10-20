@@ -1,0 +1,19 @@
+{
+  "description": "TestSprite steering hooks (session state, spend/destructive guard, verify-before-done)",
+  "hooks": {
+    "SessionStart": [
+      { "matcher": "startup|resume|clear|compact",
+        "hooks": [ { "type": "command", "command": "sh", "args": ["${CLAUDE_PLUGIN_ROOT}/hooks/session-start.sh"] } ] }
+    ],
+    "PreToolUse": [
+      { "matcher": "Bash",
+        "hooks": [
+          { "type": "command", "if": "Bash(testsprite *)",      "command": "node", "args": ["${CLAUDE_PLUGIN_ROOT}/hooks/guard.mjs"] },
+          { "type": "command", "if": "Bash(npx @testsprite/*)", "command": "node", "args": ["${CLAUDE_PLUGIN_ROOT}/hooks/guard.mjs"] }
+        ] }
+    ],
+    "Stop": [
+      { "hooks": [ { "type": "command", "command": "sh", "args": ["${CLAUDE_PLUGIN_ROOT}/hooks/stop-gate.sh"] } ] }
+    ]
+  }
+}

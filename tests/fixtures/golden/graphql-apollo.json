@@ -1,0 +1,42 @@
+{
+  "root": "<root>",
+  "git": {
+    "head": null
+  },
+  "testsprite": {
+    "workflow": null,
+    "skills": []
+  },
+  "units": [
+    {
+      "path": ".",
+      "languages": [
+        "javascript"
+      ],
+      "kinds": [
+        "graphql"
+      ],
+      "evidence": [
+        "file:schema.graphql",
+        "dep:express",
+        "dep:@apollo/server",
+        "marker:/graphql"
+      ],
+      "deploy": [
+        "render.yaml"
+      ],
+      "testsprite": null,
+      "fit": {
+        "verdict": "partial",
+        "needs": [
+          "public GraphQL endpoint"
+        ],
+        "next": "ask",
+        "notes": [
+          "graphql: proposal generation is best-effort; hand-author POST tests"
+        ]
+      }
+    }
+  ],
+  "warnings": []
+}

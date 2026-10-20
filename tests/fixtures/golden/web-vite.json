@@ -1,0 +1,47 @@
+{
+  "root": "<root>",
+  "git": {
+    "head": null
+  },
+  "testsprite": {
+    "workflow": null,
+    "skills": []
+  },
+  "units": [
+    {
+      "path": ".",
+      "languages": [
+        "typescript"
+      ],
+      "kinds": [
+        "web-frontend"
+      ],
+      "evidence": [
+        "file:index.html",
+        "file:vite.config.ts",
+        "dep:react",
+        "dep:react-dom",
+        "script:dev",
+        "script:preview"
+      ],
+      "devServer": {
+        "cmd": "npm run dev",
+        "port": 5173,
+        "source": "vite default"
+      },
+      "deploy": [
+        "vercel.json"
+      ],
+      "testsprite": null,
+      "fit": {
+        "verdict": "full",
+        "needs": [
+          "reachable URL, or a dev/preview server port (--local needs a V3 account)"
+        ],
+        "next": "init",
+        "notes": []
+      }
+    }
+  ],
+  "warnings": []
+}

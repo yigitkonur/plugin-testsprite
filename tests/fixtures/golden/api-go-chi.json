@@ -1,0 +1,39 @@
+{
+  "root": "<root>",
+  "git": {
+    "head": null
+  },
+  "testsprite": {
+    "workflow": null,
+    "skills": []
+  },
+  "units": [
+    {
+      "path": ".",
+      "languages": [
+        "go"
+      ],
+      "kinds": [
+        "http-api"
+      ],
+      "evidence": [
+        "dep:github.com/go-chi/chi/v5",
+        "marker:ListenAndServe(",
+        "marker:EXPOSE 8080"
+      ],
+      "deploy": [
+        "Dockerfile"
+      ],
+      "testsprite": null,
+      "fit": {
+        "verdict": "full",
+        "needs": [
+          "public base URL (deployed preview or staging)"
+        ],
+        "next": "init",
+        "notes": []
+      }
+    }
+  ],
+  "warnings": []
+}

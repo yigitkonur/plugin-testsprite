@@ -1,0 +1,36 @@
+{
+  "root": "<root>",
+  "git": {
+    "head": null
+  },
+  "testsprite": {
+    "workflow": null,
+    "skills": []
+  },
+  "units": [
+    {
+      "path": ".",
+      "languages": [
+        "go"
+      ],
+      "kinds": [
+        "cli-tool"
+      ],
+      "evidence": [
+        "file:cmd/greet/main.go",
+        "dep:github.com/spf13/cobra"
+      ],
+      "deploy": [],
+      "testsprite": null,
+      "fit": {
+        "verdict": "none",
+        "needs": [],
+        "next": "stop",
+        "notes": [
+          "cli-tool: TestSprite cannot execute a binary; use native subprocess/golden tests"
+        ]
+      }
+    }
+  ],
+  "warnings": []
+}

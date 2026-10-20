@@ -1,0 +1,40 @@
+{
+  "root": "<root>",
+  "git": {
+    "head": null
+  },
+  "testsprite": {
+    "workflow": null,
+    "skills": []
+  },
+  "units": [
+    {
+      "path": ".",
+      "languages": [
+        "python"
+      ],
+      "kinds": [
+        "http-api"
+      ],
+      "evidence": [
+        "file:openapi.json",
+        "dep:fastapi",
+        "marker:EXPOSE 8000"
+      ],
+      "deploy": [
+        "Dockerfile",
+        "fly.toml"
+      ],
+      "testsprite": null,
+      "fit": {
+        "verdict": "full",
+        "needs": [
+          "public base URL (deployed preview or staging)"
+        ],
+        "next": "init",
+        "notes": []
+      }
+    }
+  ],
+  "warnings": []
+}

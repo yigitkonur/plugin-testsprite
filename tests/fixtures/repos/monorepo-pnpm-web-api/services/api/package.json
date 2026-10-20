@@ -1,0 +1,6 @@
+{
+  "name": "@acme/api",
+  "private": true,
+  "scripts": { "dev": "node src/index.js", "start": "node src/index.js" },
+  "dependencies": { "fastify": "^4.28.0" }
+}

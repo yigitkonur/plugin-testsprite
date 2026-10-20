@@ -1,0 +1,71 @@
+{
+  "root": "<root>",
+  "git": {
+    "head": null
+  },
+  "testsprite": {
+    "workflow": null,
+    "skills": []
+  },
+  "units": [
+    {
+      "path": "apps/web",
+      "languages": [
+        "typescript"
+      ],
+      "kinds": [
+        "web-frontend"
+      ],
+      "monorepo": true,
+      "evidence": [
+        "file:index.html",
+        "file:vite.config.ts",
+        "dep:react",
+        "dep:react-dom",
+        "script:dev"
+      ],
+      "devServer": {
+        "cmd": "npm run dev",
+        "port": 5174,
+        "source": "script flag (dev)"
+      },
+      "deploy": [],
+      "testsprite": {
+        "configPath": "apps/web/.testsprite/config.json",
+        "projectId": "proj_8f0f6"
+      },
+      "fit": {
+        "verdict": "full",
+        "needs": [
+          "reachable URL, or a dev/preview server port (--local needs a V3 account)"
+        ],
+        "next": "init",
+        "notes": []
+      }
+    },
+    {
+      "path": "services/api",
+      "languages": [
+        "javascript"
+      ],
+      "kinds": [
+        "http-api"
+      ],
+      "monorepo": true,
+      "evidence": [
+        "dep:fastify"
+      ],
+      "deploy": [],
+      "testsprite": null,
+      "fit": {
+        "verdict": "full",
+        "needs": [
+          "public base URL (deployed preview or staging)"
+        ],
+        "next": "init",
+        "notes": []
+      }
+    }
+  ],
+  "warnings": []
+}

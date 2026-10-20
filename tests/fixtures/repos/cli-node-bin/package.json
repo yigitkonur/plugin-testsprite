@@ -1,0 +1,6 @@
+{
+  "name": "greet-cli",
+  "version": "1.0.0",
+  "bin": { "greet": "bin/greet.js" },
+  "dependencies": { "commander": "^12.1.0" }
+}

@@ -1,0 +1,48 @@
+{
+  "root": "<root>",
+  "git": {
+    "head": null
+  },
+  "testsprite": {
+    "workflow": null,
+    "skills": []
+  },
+  "units": [
+    {
+      "path": ".",
+      "languages": [
+        "javascript",
+        "typescript"
+      ],
+      "kinds": [
+        "web-frontend"
+      ],
+      "evidence": [
+        "file:next.config.mjs",
+        "dep:next",
+        "dep:react",
+        "dep:react-dom",
+        "script:dev",
+        "script:start"
+      ],
+      "devServer": {
+        "cmd": "npm run dev",
+        "port": 3000,
+        "source": "next default"
+      },
+      "deploy": [
+        "vercel.json"
+      ],
+      "testsprite": null,
+      "fit": {
+        "verdict": "full",
+        "needs": [
+          "reachable URL, or a dev/preview server port (--local needs a V3 account)"
+        ],
+        "next": "init",
+        "notes": []
+      }
+    }
+  ],
+  "warnings": []
+}

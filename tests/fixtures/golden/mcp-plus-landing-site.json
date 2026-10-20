@@ -1,0 +1,54 @@
+{
+  "root": "<root>",
+  "git": {
+    "head": null
+  },
+  "testsprite": {
+    "workflow": null,
+    "skills": []
+  },
+  "units": [
+    {
+      "path": ".",
+      "languages": [
+        "typescript"
+      ],
+      "kinds": [
+        "web-frontend",
+        "mcp-server"
+      ],
+      "transport": "stdio",
+      "evidence": [
+        "file:site/vite.config.ts",
+        "dep:react",
+        "dep:react-dom",
+        "dep:@modelcontextprotocol/sdk",
+        "marker:StdioServerTransport",
+        "script:dev",
+        "script:start"
+      ],
+      "devServer": {
+        "cmd": "npm run dev",
+        "port": 5173,
+        "source": "vite default"
+      },
+      "deploy": [],
+      "testsprite": null,
+      "fit": {
+        "verdict": "mixed",
+        "needs": [
+          "reachable URL, or a dev/preview server port (--local needs a V3 account)"
+        ],
+        "next": "ask",
+        "perKind": {
+          "web-frontend": "full",
+          "mcp-server": "none"
+        },
+        "notes": [
+          "mcp-server: stdio transport only, no network surface for the cloud to call; use native client tests or an MCP inspector"
+        ]
+      }
+    }
+  ],
+  "warnings": []
+}

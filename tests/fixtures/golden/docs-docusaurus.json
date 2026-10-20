@@ -1,0 +1,46 @@
+{
+  "root": "<root>",
+  "git": {
+    "head": null
+  },
+  "testsprite": {
+    "workflow": null,
+    "skills": []
+  },
+  "units": [
+    {
+      "path": ".",
+      "languages": [
+        "javascript"
+      ],
+      "kinds": [
+        "web-frontend"
+      ],
+      "evidence": [
+        "file:docusaurus.config.js",
+        "dep:@docusaurus/core",
+        "dep:react",
+        "dep:react-dom",
+        "script:start"
+      ],
+      "devServer": {
+        "cmd": "npm start",
+        "port": 3000,
+        "source": "docusaurus default"
+      },
+      "deploy": [
+        "netlify.toml"
+      ],
+      "testsprite": null,
+      "fit": {
+        "verdict": "full",
+        "needs": [
+          "reachable URL, or a dev/preview server port (--local needs a V3 account)"
+        ],
+        "next": "init",
+        "notes": []
+      }
+    }
+  ],
+  "warnings": []
+}

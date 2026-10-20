@@ -1,0 +1,13 @@
+{
+  "name": "mcp-plus-landing-site",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": { "dev": "vite site", "build": "tsc && vite build site", "start": "node dist/index.js" },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": { "typescript": "^5.5.0", "vite": "^5.4.0" }
+}

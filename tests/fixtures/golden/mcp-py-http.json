@@ -1,0 +1,39 @@
+{
+  "root": "<root>",
+  "git": {
+    "head": null
+  },
+  "testsprite": {
+    "workflow": null,
+    "skills": []
+  },
+  "units": [
+    {
+      "path": ".",
+      "languages": [
+        "python"
+      ],
+      "kinds": [
+        "mcp-server"
+      ],
+      "transport": "http",
+      "evidence": [
+        "dep:mcp",
+        "marker:transport=\"streamable-http"
+      ],
+      "deploy": [],
+      "testsprite": null,
+      "fit": {
+        "verdict": "partial",
+        "needs": [
+          "public MCP endpoint and auth token"
+        ],
+        "next": "ask",
+        "notes": [
+          "mcp-server: hand-author JSON-RPC tests against the public endpoint"
+        ]
+      }
+    }
+  ],
+  "warnings": []
+}

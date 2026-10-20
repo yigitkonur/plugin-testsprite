@@ -1,0 +1,3 @@
+#!/usr/bin/env node
+const lib = require('path').join(require('fs').realpathSync(__filename), '..', '..', 'lib', 'detect.mjs');
+import(require('url').pathToFileURL(lib).href).then((m) => { process.exitCode = m.main(process.argv.slice(2)); });

@@ -1,0 +1,37 @@
+{
+  "root": "<root>",
+  "git": {
+    "head": null
+  },
+  "testsprite": {
+    "workflow": null,
+    "skills": []
+  },
+  "units": [
+    {
+      "path": ".",
+      "languages": [
+        "typescript"
+      ],
+      "kinds": [
+        "mcp-server"
+      ],
+      "transport": "stdio",
+      "evidence": [
+        "dep:@modelcontextprotocol/sdk",
+        "marker:StdioServerTransport"
+      ],
+      "deploy": [],
+      "testsprite": null,
+      "fit": {
+        "verdict": "none",
+        "needs": [],
+        "next": "stop",
+        "notes": [
+          "mcp-server: stdio transport only, no network surface for the cloud to call; use native client tests or an MCP inspector"
+        ]
+      }
+    }
+  ],
+  "warnings": []
+}

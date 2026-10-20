@@ -1,0 +1,38 @@
+{
+  "root": "<root>",
+  "git": {
+    "head": null
+  },
+  "testsprite": {
+    "workflow": null,
+    "skills": []
+  },
+  "units": [
+    {
+      "path": ".",
+      "languages": [
+        "javascript"
+      ],
+      "kinds": [
+        "http-api"
+      ],
+      "evidence": [
+        "dep:express",
+        "marker:PORT=3000"
+      ],
+      "deploy": [
+        "Procfile"
+      ],
+      "testsprite": null,
+      "fit": {
+        "verdict": "full",
+        "needs": [
+          "public base URL (deployed preview or staging)"
+        ],
+        "next": "init",
+        "notes": []
+      }
+    }
+  ],
+  "warnings": []
+}

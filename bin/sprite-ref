@@ -1,0 +1,3 @@
+#!/usr/bin/env node
+const fs = require('fs'), path = require('path'), { pathToFileURL } = require('url');
+import(pathToFileURL(path.join(path.dirname(fs.realpathSync(__filename)), '..', 'lib', 'ref.mjs')).href).then((m) => m.main(process.argv.slice(2)));

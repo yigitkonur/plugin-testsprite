@@ -1,0 +1,36 @@
+{
+  "root": "<root>",
+  "git": {
+    "head": null
+  },
+  "testsprite": {
+    "workflow": null,
+    "skills": []
+  },
+  "units": [
+    {
+      "path": ".",
+      "languages": [
+        "rust"
+      ],
+      "kinds": [
+        "cli-tool"
+      ],
+      "evidence": [
+        "field:[[bin]]",
+        "dep:clap"
+      ],
+      "deploy": [],
+      "testsprite": null,
+      "fit": {
+        "verdict": "none",
+        "needs": [],
+        "next": "stop",
+        "notes": [
+          "cli-tool: TestSprite cannot execute a binary; use native subprocess/golden tests"
+        ]
+      }
+    }
+  ],
+  "warnings": []
+}
