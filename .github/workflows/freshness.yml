@@ -36,6 +36,6 @@ jobs:
         run: |
           if [ -z "$(gh issue list --state open --search 'CLI drift in:title' --json number --jq '.[0].number')" ]; then
             gh issue create --title "CLI drift: the newest TestSprite CLI no longer matches the pinned surface" \
-              --body "$(printf 'The nightly canary found commands or flags the plugin cites that are gone from the newest CLI.\n\n```\n%s\n```\n\nSee scripts/drift_check.py and AGENTS.md for how to refresh ci/pinned/.' "$(cat /tmp/drift.txt)")"
+              --body "$(printf 'The nightly canary found a command or flag in the pinned CLI surface that the newest CLI no longer has, or plugin text that no longer traces to it.\n\n```\n%s\n```\n\nSee scripts/drift_check.py and AGENTS.md for how to refresh ci/pinned/.' "$(cat /tmp/drift.txt)")"
           fi
           exit 1

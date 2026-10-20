@@ -20,8 +20,9 @@ If `sprite-ref` reports the CLI missing, print its install hint and stop; do not
 - Exit codes are a contract ([exit-codes](exit-codes.md)).
 - Global flags are listed at the top of `testsprite --help` (profile, output format, endpoint override, request timeout, dry-run).
 - Environment: `TESTSPRITE_API_KEY` and `TESTSPRITE_API_URL` override the credentials file; `TESTSPRITE_PROFILE` picks a profile; `TESTSPRITE_PROJECT_ID` is the default project; `TESTSPRITE_NO_TELEMETRY` or `DO_NOT_TRACK` opt out of usage telemetry. Do not set `TESTSPRITE_CLIENT` on the user's behalf (it reports a wrapper's identity).
-- Pure-local commands (no network, no key): `test scaffold`, `test lint`, `test create --plan-template`, `agent install`.
+- Pure-local commands (no network, no key): `test scaffold`, `test lint`, `test create --plan-template`. `agent install` also needs no key but writes the vendor skills this plugin replaces: do not run it.
 - Check `env | grep TESTSPRITE_` when behavior looks wrong: an exported variable silently beats `--profile`.
+- `testsprite doctor` always warns that the verify skill is not installed and suggests `testsprite setup`. Ignore that line; the plugin's `TESTSPRITE_NO_SKILL_WARNING` covers the stderr nudge, not doctor.
 
 ## When a flag you remember is not in the help
 

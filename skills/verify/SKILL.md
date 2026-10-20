@@ -39,7 +39,7 @@ Deployed change: wait until it is live; a run before then verifies the previous 
 Pick the cheapest honest check (exact flags: `sprite-ref help test run`, `sprite-ref help test rerun`):
 
 - Existing test, small change: a rerun replays saved code with auto-heal on, which is lenient. For a **new** change prefer a fresh `test run`.
-- New frontend test: `test create --plan-from <file> --run --wait`.
+- New frontend test on a deployed target: `test create --plan-from <file> --run --wait`. On a **local** app, `test create` has no `--local`: create it without `--run` (free), then `test run <id> --local <port> --wait` (a built server beats a dev server; the tunnel lives only while that command runs).
 - New backend test: `test create --type backend ... --code-file <file> --run --wait`. With dependencies, run the whole project (`test run --all --project <id> --wait`) so the wave engine orders producers, consumers and teardown.
 - Use `--output json`, `run_in_background`, and write output to `.testsprite/tmp/` when it can be large. Keep the run id from the early stderr receipt.
 

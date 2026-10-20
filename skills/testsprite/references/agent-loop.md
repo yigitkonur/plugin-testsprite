@@ -30,7 +30,7 @@ A rerun replays saved code with auto-heal on: more lenient than a fresh run. A h
 
 ## Accounting
 
-After a batch (`test run --all`), account for every member: `accepted[]`, `conflicts[]`, `deferred[]`, `skippedFrontend`. Anything not terminal is not green. Exit 0 alone does not prove every test ran.
+After a batch (`test run --all`), account for every member in the command's JSON output: `accepted[]`, `conflicts[]`, `deferred[]`, `skippedFrontend` and `skippedIntegration` (a rerun also has `notFound[]` and `closure`). `--summary-file` holds only totals and per-run rows. Anything not terminal is not green. Exit 0 alone does not prove every test ran: skipped members do not change it.
 
 ## Report
 

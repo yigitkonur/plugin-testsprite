@@ -22,7 +22,8 @@ function runHook(cmd, args, payload, { cwd = ROOT, e = env() } = {}) {
   const r = spawnSync(cmd, args, { input: JSON.stringify(payload), cwd, env: e, encoding: 'utf8' });
   return { code: r.status, out: r.stdout, err: r.stderr, env: e };
 }
-const guard = (command, extra = {}, e) => runHook(process.execPath, [hook('guard.mjs')], { hook_event_name: 'PreToolUse', tool_name: 'Bash', session_id: 's1', tool_input: { command }, ...extra }, { e });
+// Through guard.sh, the entry hooks.json points at (the prefilter, then guard.mjs).
+const guard = (command, extra = {}, e) => runHook('sh', [hook('guard.sh')], { hook_event_name: 'PreToolUse', tool_name: 'Bash', session_id: 's1', tool_input: { command }, ...extra }, { e });
 const decision = (r) => (r.out ? JSON.parse(r.out).hookSpecificOutput.permissionDecision : 'silent');
 
 // ---------- guard ----------
@@ -33,6 +34,8 @@ const SILENT = [
   'testsprite setup --no-agent', 'testsprite setup --from-env --no-agent', 'testsprite test flaky t1 --runs 3', 'testsprite test lint --plan-from-dir ./plans',
   'testsprite ci init github --project p --env e', 'testsprite frobnicate --all', 'testsprite test run "abc', 'echo hello', 'ls -la', 'testsprite --version',
   'testsprite test artifact get r1 --out .testsprite/runs/r1', 'testsprite test run --help', 'testsprite usage', 'testsprite project docs upload spec.json --project p --role api-doc',
+  'testsprite test flaky t1 --runs 2', 'testsprite test rerun --skip-terminal a b c', 'testsprite test cancel run_1', 'testsprite test open t1 --no-browser',
+  'git commit -m "document the testsprite setup"', 'cat docs/testsprite.md', 'grep -rn "test run --all" docs/testsprite-notes.md',
 ];
 const ASK = [
   'testsprite test run --all --project p --wait', 'testsprite test rerun --all --project p', 'testsprite test run a b c d', 'testsprite test create-batch --plans p.jsonl --run --wait',
@@ -45,6 +48,13 @@ const ASK = [
   'testsprite project auto-auth p --client-secret s3', 'testsprite project auto-auth p --refresh-token r', 'testsprite project env create p --name e --password=hunter2',
   'testsprite test run --all --dry-run --password x', 'cd app && FOO=1 testsprite project delete p1 --confirm', 'npx @testsprite/testsprite-cli@latest test run --all',
   'testsprite test run --all 2>&1 | tail -3', 'testsprite project list && testsprite project delete p --confirm', 'echo $(testsprite test run --all)', 'env CI=1 testsprite ci run --project p',
+  // wrapper forms the `if: Bash(testsprite *)` filter never matched
+  'npx -y @testsprite/testsprite-cli test run --all --project p', 'npx --yes @testsprite/testsprite-cli@latest project delete p --confirm', 'bunx @testsprite/testsprite-cli test run --all',
+  './node_modules/.bin/testsprite project delete p --confirm', '/usr/local/bin/testsprite test delete t1 --confirm', 'time testsprite test run --all --project p',
+  'env FOO=1 testsprite test run --all --project p', 'nohup testsprite test run --all --project p &', 'cd app && ./node_modules/.bin/testsprite ci run --project p',
+  // rule fixes in 0.1.1: flaky follows the threshold, --set-secret overwrites a repo secret, a boolean flag must not eat the next id
+  'testsprite test flaky t1 --runs 4', 'testsprite ci init github --project p --set-secret', 'testsprite ci init github --project p --force --set-secret',
+  'testsprite test rerun --skip-terminal a b c d', 'testsprite test rerun --all --skip-terminal --project p',
 ];
 for (const c of SILENT) test(`guard silent: ${c}`, () => { const r = guard(c); assert.equal(r.code, 0); assert.equal(decision(r), 'silent', r.out); });
 for (const c of ASK) test(`guard ask: ${c}`, () => {
@@ -67,13 +77,19 @@ test('guard: guard=false silences asks but not the read-only agents', () => {
   assert.equal(decision(guard('testsprite test run --all', {}, e)), 'silent');
   assert.equal(decision(guard('testsprite test rerun t1', { agent_type: 'failure-triager' }, e)), 'deny');
 });
+test('guard: confirm_runs_over governs flaky checks too', () => {
+  const at = (n) => env({ CLAUDE_PLUGIN_OPTION_CONFIRM_RUNS_OVER: String(n) });
+  assert.equal(decision(guard('testsprite test flaky t1 --runs 4', {}, at(5))), 'silent');
+  assert.equal(decision(guard('testsprite test flaky t1 --runs 6', {}, at(5))), 'ask');
+  assert.equal(decision(guard('testsprite test flaky t1 --runs 4', {}, at(3))), 'ask');
+});
 test('guard: confirm_runs_over is honored', () => {
   assert.equal(decision(guard('testsprite test run a b c d', {}, env({ CLAUDE_PLUGIN_OPTION_CONFIRM_RUNS_OVER: '5' }))), 'silent');
   assert.equal(decision(guard('testsprite test run a b c d e f', {}, env({ CLAUDE_PLUGIN_OPTION_CONFIRM_RUNS_OVER: '5' }))), 'ask');
 });
 for (const agent of ['failure-triager', 'coverage-auditor', 'testsprite:failure-triager']) {
   test(`guard denies non-read-only testsprite commands for ${agent}`, () => {
-    for (const c of ['testsprite test rerun t1', 'testsprite project delete p --confirm', 'testsprite test run t1', 'testsprite test code put t --code-file f.py --expected-version v'])
+    for (const c of ['testsprite test rerun t1', 'testsprite project delete p --confirm', 'testsprite test run t1', 'testsprite test code put t --code-file f.py --expected-version v', 'testsprite test cancel run_1'])
       assert.equal(decision(guard(c, { agent_type: agent })), 'deny', c);
     for (const c of ['testsprite test list --project p', 'testsprite test artifact get r1 --out d', 'testsprite test failure get r1', 'testsprite test steps t --run-id r1', 'testsprite test code get t --out f.py'])
       assert.equal(decision(guard(c, { agent_type: agent })), 'silent', c);
@@ -92,18 +108,33 @@ test('guard stamps run attempts into a recorded session', () => {
   assert.equal(JSON.parse(fs.readFileSync(f, 'utf8')).attempts.length, 1);
 });
 test('guard fails open on garbage input', () => {
-  const r = spawnSync(process.execPath, [hook('guard.mjs')], { input: 'not json', env: env(), encoding: 'utf8' });
-  assert.equal(r.status, 0); assert.equal(r.stdout, '');
+  for (const [cmd, args] of [[process.execPath, [hook('guard.mjs')]], ['sh', [hook('guard.sh')]]]) {
+    const r = spawnSync(cmd, args, { input: 'testsprite not json', env: env(), encoding: 'utf8' });
+    assert.equal(r.status, 0); assert.equal(r.stdout, '');
+  }
+});
+test('guard.sh: a command that does not mention testsprite never starts Node', () => {
+  // PATH holds only `cat`: an unrelated command must exit 0 with no Node available; a testsprite command has to reach for Node and fail.
+  const bin = tmp(); fs.symlinkSync('/bin/cat', path.join(bin, 'cat'));
+  const noNode = { ...env(), PATH: bin };
+  const payload = (command) => JSON.stringify({ hook_event_name: 'PreToolUse', tool_name: 'Bash', tool_input: { command } });
+  const unrelated = spawnSync('/bin/sh', [hook('guard.sh')], { input: payload('ls -la && git status'), env: noNode, encoding: 'utf8' });
+  assert.equal(unrelated.status, 0); assert.equal(unrelated.stdout, '');
+  const related = spawnSync('/bin/sh', [hook('guard.sh')], { input: payload('testsprite test run --all'), env: noNode, encoding: 'utf8' });
+  assert.notEqual(related.status, 0, 'a testsprite command is handed to Node');
 });
 
 // ---------- session start ----------
-function linkedDir({ git = false } = {}) {
+// config: 'tracked' (committed), 'untracked' (just written, never added) or 'ignored' (hidden by .gitignore); only differs in a git repo.
+function linkedDir({ git = false, config = 'tracked' } = {}) {
   const d = tmp();
   fs.mkdirSync(path.join(d, '.testsprite'));
   fs.writeFileSync(path.join(d, '.testsprite', 'config.json'), JSON.stringify({ projectId: 'proj_8f0f6' }));
   if (git) {
     const g = (...a) => execFileSync('git', a, { cwd: d, stdio: 'ignore', env: { ...process.env, GIT_AUTHOR_NAME: 't', GIT_AUTHOR_EMAIL: 't@t', GIT_COMMITTER_NAME: 't', GIT_COMMITTER_EMAIL: 't@t' } });
-    g('init', '-q'); fs.mkdirSync(path.join(d, 'src')); fs.writeFileSync(path.join(d, 'src', 'a.ts'), '1'); g('add', '-A'); g('commit', '-qm', 'init');
+    g('init', '-q'); fs.mkdirSync(path.join(d, 'src')); fs.writeFileSync(path.join(d, 'src', 'a.ts'), '1');
+    if (config === 'ignored') fs.writeFileSync(path.join(d, '.gitignore'), '.testsprite/\n');
+    g('add', config === 'untracked' ? 'src' : '-A'); g('commit', '-qm', 'init');
   }
   return d;
 }
@@ -172,13 +203,33 @@ test('Stop gate: blocks once for a code change with no verdict, again only for a
   await new Promise((r) => setTimeout(r, 30)); edit(x.d, 'src/b.ts', 'newer');
   assert.equal(JSON.parse(stop(x).out).decision, 'block');
 });
+test('Stop gate: works end to end when the config is untracked or gitignored (the state right after init)', () => {
+  for (const config of ['untracked', 'ignored']) {
+    const d = linkedDir({ git: true, config });
+    const e = env({ CLAUDE_PLUGIN_OPTION_STOP_GATE: 'true' });
+    sessionStart(d, {}, e);
+    const f = path.join(e.CLAUDE_PLUGIN_DATA, 'sessions', 'sess1.json');
+    const s = JSON.parse(fs.readFileSync(f, 'utf8'));
+    assert.deepEqual(s.linkedRoots, [d], `${config}: the session records the link`);
+    s.startedAt -= 20000; fs.writeFileSync(f, JSON.stringify(s));
+    edit(d, 'src/a.ts', 'changed');
+    const r = stop({ d, e });
+    assert.equal(JSON.parse(r.out).decision, 'block', `${config}: ${r.out || '(no output)'}`);
+  }
+});
 test('Stop gate: silent for docs-only and test-only changes', () => {
   const x = stopSetup(); edit(x.d, 'README.md'); edit(x.d, 'docs/a.md'); edit(x.d, 'src/a.test.ts'); edit(x.d, 'package-lock.json');
   assert.equal(stop(x).out, '');
 });
 test('Stop gate: silent when the reply carries a verdict, asks a question, or says unverified', () => {
-  for (const msg of ['Done. Unverified because no credentials are configured.', 'TestSprite run r1 passed.', 'Which environment should I use?']) {
+  for (const msg of ['Done. Unverified because no credentials are configured.', 'TestSprite run r1 passed.', 'Which environment should I use?',
+    'Not verified: there is no API key.', 'checkout happy path · passed. Dashboard: https://www.testsprite.com/dashboard/runs/x', 'run_8f3a2c failed on step 4.']) {
     const x = stopSetup(); edit(x.d, 'src/a.ts', 'changed'); assert.equal(stop(x, msg).out, '', msg);
+  }
+});
+test('Stop gate: a reply that only says typecheck or lint is "verified" still gets the nudge', () => {
+  for (const msg of ['I verified the typecheck passes.', 'Done. Everything is verified.', 'Fixed it; tests pass and lint is clean.', 'Updated the TestSprite docs.']) {
+    const x = stopSetup(); edit(x.d, 'src/a.ts', 'changed'); assert.equal(JSON.parse(stop(x, msg).out).decision, 'block', msg);
   }
 });
 test('Stop gate: silent when a run was attempted after the last edit', () => {

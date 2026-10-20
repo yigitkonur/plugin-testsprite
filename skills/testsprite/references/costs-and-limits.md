@@ -21,6 +21,7 @@ Cancelling a V3 frontend run before it finishes attempts to return the charge (r
 | Limit | Value | Note |
 |---|---|---|
 | Run triggers | 60 per minute per key (server); the CLI self-throttles to 50 | Excess returns exit 11; the test row stays created and the run never started. Re-list and check `draft` rows |
+| Runs in flight | 50 per account by default, counting runs from every source (CLI, portal, schedules, CI) | A single `test run` over the cap exits 11 (`details.reason` `inflight_cap`) and is not retried; a batch accepts nothing and returns every id in `deferred[]`, exit 7. Wait for running runs (`test wait`), or send a smaller batch |
 | Local tunnel bindings | 5 live per user | `tunnel_binding_limit` is exit 11 and is not auto-retried. `testsprite tunnel list`, then `testsprite tunnel stop <id>` |
 | Local run concurrency | default 5, cap 10 | One tunnel serves the whole command |
 | Timeouts | ordinary waits default to 600 s; local runs to 1200 s; `plan generate` waits longer | Pass `--timeout` deliberately; in `claude -p` a background command is stopped by the harness after about 10 minutes |

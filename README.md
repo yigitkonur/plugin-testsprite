@@ -33,7 +33,7 @@ A `none` verdict prints the reason and a "do instead" list, and creates no cloud
 
 ## Install
 
-Requires Claude Code (tested on 2.1.302), Node 20.19 or newer, and the TestSprite CLI installed separately (`npm install -g @testsprite/testsprite-cli`; verified against 0.15.x). The plugin never installs it for you.
+Requires Claude Code (tested on 2.1.302), macOS or Linux (the hooks run under `sh` and `git`; Windows is untested), Node 20.19 or newer, and the TestSprite CLI installed separately (`npm install -g @testsprite/testsprite-cli`; verified against 0.15.x). The plugin never installs it for you.
 
 ```
 claude plugin marketplace add yigitkonur/plugin-testsprite
@@ -42,7 +42,7 @@ claude plugin install testsprite@plugin-testsprite
 
 Claude Code may note that three plugin settings are unset after install; the defaults apply (guard on, Stop gate off, confirm above 3 runs), and `/plugin configure testsprite@plugin-testsprite` changes them.
 
-Authenticate yourself: create a workspace key in the TestSprite portal and run `! testsprite setup --no-agent` (masked prompt). The plugin never reads, prints or asks for the key. Do not run `testsprite setup` without `--no-agent`: it installs the official skills this plugin replaces (the plugin silences the CLI's nag about that).
+Authenticate yourself: create a workspace key in the TestSprite portal and run `! testsprite setup --no-agent` (masked prompt). The plugin never reads, prints or asks for the key. Do not run `testsprite setup` without `--no-agent`: it installs the official skills this plugin replaces (the plugin silences the CLI's stderr nudge about that; `testsprite doctor` still prints it, so ignore that line).
 
 ## Safety model
 

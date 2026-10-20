@@ -7,7 +7,8 @@ import { readStdinJson, readSession, writeSession } from '../lib/session.mjs';
 const SKIP = [/\.mdx?$/i, /^docs\//, /(^|\/)(package-lock\.json|pnpm-lock\.yaml|yarn\.lock|Cargo\.lock|go\.sum|poetry\.lock|uv\.lock|Gemfile\.lock)$/,
   /(^|\/)tsconfig[^/]*\.json$/, /(^|\/)\.(eslintrc|prettierrc)[^/]*$/, /(^|\/)(eslint|prettier|biome)\.config\./, /^\.github\//, /(^|\/)\.testsprite\//, /^\.claude\//,
   /\.(test|spec)\.[a-z]+$/, /(^|\/)(tests?|__tests__)\//];
-const VERDICT = /testsprite|verified|unverified|could not run|not verified/i;
+// A reply that reports a TestSprite outcome or says plainly that there is none. A bare "verified" (typecheck, lint, unit tests) does not count.
+const VERDICT = /\bunverified\b|\bnot (?:yet )?verified\b|testsprite\b[^.\n]{0,80}\b(?:passed|failed|blocked|cancelled|verdict)\b|\b(?:passed|failed|blocked|cancelled)\b[^.\n]{0,80}\btestsprite\b|\brun_[a-z0-9]{4,}|testsprite\.com\//i;
 
 const git = (cwd, args) => { try { return execFileSync('git', args, { cwd, encoding: 'utf8', timeout: 3000, stdio: ['ignore', 'pipe', 'ignore'] }).trim(); } catch { return null; } };
 

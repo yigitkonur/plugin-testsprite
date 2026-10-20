@@ -1,0 +1,15 @@
+[package]
+name = "agent-core"
+version = "0.1.0"
+edition = "2021"
+description = "Agent runtime with an optional mcp client"
+keywords = ["agent", "mcp"]
+
+[features]
+default = []
+mcp = ["dep:serde_urlencoded"]
+mcp-stdio = ["mcp", "process"]
+process = []
+
+[dependencies]
+serde_urlencoded = { version = "0.7", optional = true }

@@ -21,7 +21,7 @@ Read `${CLAUDE_PLUGIN_ROOT}/skills/testsprite/references/triage.md` and follow i
 
 `testsprite test artifact get <run-id> --out <dir>` (the parent directory must exist; use `.testsprite/runs/<run-id>`), `testsprite test failure summary`, `testsprite test failure get`, `testsprite test steps <test-id> --run-id <run-id> --output json`, `testsprite test result <test-id> --history`, `testsprite test code get <test-id>`, `testsprite test get <test-id>`, `testsprite test list`, `testsprite test diff`. Exact flags: `sprite-ref help <command path>`. Pin the run id every time; the latest run is not necessarily the one asked about. Then read the source files the bundle points to.
 
-Do not run anything that starts, changes or deletes: no `test run`, `test rerun`, `test create`, `test plan put`, `test code put`, `test update`, `test flaky`, `test plan generate`, `project ...` writes. The plugin's guard denies them for you; if one is denied, do not look for a way around it.
+Do not run anything that starts, changes or deletes: no `test run`, `test rerun`, `test cancel`, `test create`, `test plan put`, `test code put`, `test update`, `test flaky`, `test plan generate`, `project ...` writes. The plugin's guard denies them for you; if one is denied, do not look for a way around it.
 
 ## Method
 
@@ -29,7 +29,7 @@ For each run: confirm the run really failed (not blocked by a producer); compare
 
 ## Output (exactly this shape, nothing else)
 
-One row per run:
+One row per run, each row a single line (no bullets or sub-lists inside a row):
 
 `runId · testId · class · confidence · evidence · nextAction · what would change my mind`
 

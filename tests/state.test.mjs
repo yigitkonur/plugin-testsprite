@@ -86,6 +86,47 @@ test('git repo: linkedRoots, head, changedSince', () => {
   assert.deepEqual(s.git.changedSince, ['y.txt']);
 });
 
+// A config that git does not track (just written by init, or hidden by a global ignore of dot-directories) still links the unit.
+function gitRepo(t) {
+  const g = (...a) => execFileSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@t', ...a], { cwd: t, stdio: 'ignore' });
+  g('init', '-q');
+  fs.writeFileSync(path.join(t, 'x.txt'), '1');
+  g('add', 'x.txt'); g('commit', '-qm', 'one');
+  return g;
+}
+const writeConfig = (dir, id = 'p1') => {
+  fs.mkdirSync(path.join(dir, '.testsprite'), { recursive: true });
+  fs.writeFileSync(path.join(dir, '.testsprite', 'config.json'), JSON.stringify({ projectId: id }));
+};
+
+test('git repo: an untracked config links the repo root', () => {
+  const t = tmp(); gitRepo(t); writeConfig(t);
+  assert.deepEqual(state(t, { cwd: t }).linkedRoots, [t]);
+});
+
+test('git repo: a gitignored config links the repo from the working directory', () => {
+  const t = tmp(); const g = gitRepo(t);
+  fs.writeFileSync(path.join(t, '.gitignore'), '.testsprite/\n'); g('add', '.gitignore'); g('commit', '-qm', 'ignore');
+  writeConfig(t);
+  assert.deepEqual(state(t, { cwd: t }).linkedRoots, [t]);
+  fs.mkdirSync(path.join(t, 'src'));
+  assert.deepEqual(state(t, { cwd: path.join(t, 'src') }).linkedRoots, [t]);
+});
+
+test('git repo: a symlinked spelling of the working directory does not list the unit twice', () => {
+  const t = tmp(); gitRepo(t); writeConfig(t);
+  const alias = path.join(tmp(), 'alias'); fs.symlinkSync(t, alias);
+  assert.deepEqual(state(t, { cwd: alias }).linkedRoots, [t]);
+});
+
+test('git repo: tracked and untracked units are both linked, once each', () => {
+  const t = tmp(); const g = gitRepo(t);
+  writeConfig(path.join(t, 'web')); g('add', '.'); g('commit', '-qm', 'web');
+  writeConfig(path.join(t, 'api'));
+  const roots = state(t, { cwd: path.join(t, 'web') }).linkedRoots.sort();
+  assert.deepEqual(roots, [path.join(t, 'api'), path.join(t, 'web')]);
+});
+
 test('SECRET never appears in any output', () => {
   const t = tmp();
   fs.mkdirSync(path.join(t, '.testsprite'));

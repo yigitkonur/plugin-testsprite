@@ -16,7 +16,7 @@ Install the new CLI to a throwaway prefix, then `python3 -I scripts/capture_cli_
 
 ## Hooks
 
-A hook must carry a concrete payload or enforce what a skill cannot (`docs/design/06-hooks.md` section 0). The guard never returns `allow`, fails open on anything it cannot parse, and has no network access. Hooks must stay silent in repos that are not linked to a TestSprite project, except the one-line environment export in `hooks/session-start.sh`.
+Gate a hook on a command with an `sh` prefilter that greps the payload (`hooks/guard.sh`), not with `if: Bash(...)`: `if` matches a literal command prefix and misses `npx -y ...`, `./node_modules/.bin/...`, `env X=1 ...` and `time ...`. A hook must carry a concrete payload or enforce what a skill cannot (`docs/design/06-hooks.md` section 0). The guard never returns `allow`, fails open on anything it cannot parse, and has no network access. Hooks must stay silent in repos that are not linked to a TestSprite project, except the one-line environment export in `hooks/session-start.sh`.
 
 ## Developing without spending
 

@@ -1,5 +1,7 @@
 # 06 · Hooks: what each one prevents, why a skill cannot, what it costs — and what was rejected
 
+> **As built:** this note was written before the plugin existed. Where it differs from the shipped files (for example `sprite-run`, which was never built, the three-entry `hooks.json` in the sketch below, which became one `hooks/guard.sh` prefilter in 0.1.1, or `scripts/check-flags.py`, which is `scripts/flag_trace.py`), the shipped files win. See `10-execution-plan.md` section 8.
+
 Source keys and evidence tags: see `README.md`. Hook facts cite `SPEC:hooks.md` (raw, 2026-10-20). Latency figures were **estimates [I]** and are now **measured** in a live session (`claude --debug`, Claude Code 2.1.302): SessionStart 134 ms in-session in a linked repo (50 ms when run standalone; 20 ms when unlinked), guard 43-58 ms per testsprite command, Stop prefilter 7 ms when the gate is off. Token figures come from the shapes defined here.
 
 ## 0. The test every hook must pass

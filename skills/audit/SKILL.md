@@ -17,7 +17,7 @@ Scope: $ARGUMENTS (a unit path; empty means every linked unit). Read the `testsp
 
 ## 1. Preflight (free)
 
-`testsprite auth status --output json`, `testsprite usage`, `testsprite doctor` (network: connectivity and key validity).
+`testsprite auth status --output json`, `testsprite usage`, `testsprite doctor` (network: connectivity and key validity). Doctor always warns "Verify skill: not installed here; run `testsprite setup`" (the nag opt-out does not cover it): ignore that line and never run `setup` because of it.
 
 ## 2. Coverage assessment (free, isolated)
 
@@ -36,11 +36,11 @@ A rerun needs a prior replayable run; never-run tests need `test run`. **Wait fo
 
 ## 4. Run, in the background
 
-The chosen command with `--timeout 900` and `--summary-file .testsprite/tmp/summary.json`; optionally `--report junit --report-file .testsprite/tmp/junit.xml`. Frontend reruns auto-heal by default; add `--no-auto-heal` for a strict regression pass. Capture output to files.
+The chosen command with `--timeout 900` and `--summary-file .testsprite/tmp/summary.json`; optionally `--report junit --report-file .testsprite/tmp/junit.xml`. Frontend reruns auto-heal by default; add `--no-auto-heal` for a strict regression pass. Send stdout (`--output json`) and stderr to files under `.testsprite/tmp/`.
 
 ## 5. Account for every member
 
-Read `accepted[]`, `conflicts[]`, `deferred[]`, `skippedFrontend` from the summary. Anything not terminal is **not green**; exit 0 alone proves nothing. Never drop a failed member from the set.
+Read `accepted[]`, `conflicts[]`, `deferred[]`, `skippedFrontend` and `skippedIntegration` (assembled integration tests, run from the portal) from the command's own JSON output; a rerun adds `notFound[]` (no replayable run) and its dependency `closure`. The `--summary-file` JSON holds only totals and per-run rows (`total`, `passed`, `failed`, `skipped`, `timedOut`, `runs[]`). Anything not terminal is **not green**; exit 0 alone proves nothing, because skipped and deferred members do not change it. Never drop a failed member from the set.
 
 ## 6. Classify failures
 

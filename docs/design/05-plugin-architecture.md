@@ -1,5 +1,7 @@
 # 05 · Plugin architecture
 
+> **As built:** this note was written before the plugin existed. Where it differs from the shipped files (for example `sprite-run`, which was never built, the three-entry `hooks.json` in the sketch below, which became one `hooks/guard.sh` prefilter in 0.1.1, or `scripts/check-flags.py`, which is `scripts/flag_trace.py`), the shipped files win. See `10-execution-plan.md` section 8.
+
 Source keys and evidence tags: see `README.md`. Hooks are specified in `06-hooks.md`; workflows in `07-workflows.md`.
 Spec facts cite `SPEC:` pages in `sources/claude-code-spec/` (read raw, 2026-10-20, Claude Code 2.1.302).
 

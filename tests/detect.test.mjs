@@ -29,6 +29,10 @@ const EXPECT = {
   'cli-go-cobra': { '.': { kinds: ['cli-tool'], verdict: 'none' } },
   'cli-rust-clap': { '.': { kinds: ['cli-tool'], verdict: 'none' } },
   'lib-ts': { '.': { kinds: ['library'], verdict: 'none' } },
+  // an HTTP listener that exists only in a test file or an example does not make the repo an API
+  'go-mcp-kit-test-server': { '.': { kinds: ['library'], verdict: 'none' } },
+  // cargo feature names and description prose are not dependencies
+  'rust-crate-mcp-feature': { '.': { kinds: ['library'], verdict: 'none' } },
   'monorepo-pnpm-web-api': {
     'apps/web': { kinds: ['web-frontend'], verdict: 'full' },
     'services/api': { kinds: ['http-api'], verdict: 'full' },

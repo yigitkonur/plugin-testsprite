@@ -1,5 +1,7 @@
 # 09 · Evidence ledger
 
+> **As built:** this note was written before the plugin existed. Where it differs from the shipped files (for example `sprite-run`, which was never built, the three-entry `hooks.json` in the sketch below, which became one `hooks/guard.sh` prefilter in 0.1.1, or `scripts/check-flags.py`, which is `scripts/flag_trace.py`), the shipped files win. See `10-execution-plan.md` section 8.
+
 What each claim in documents 01–08 rests on, what is unverified, what changed during the research, and the result of the command/flag trace.
 Source keys: see `README.md`. All paths are under `sources/`. Line numbers refer to the files as snapshotted (`sources/MANIFEST.md`).
 

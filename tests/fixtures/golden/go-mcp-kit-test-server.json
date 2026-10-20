@@ -1,0 +1,35 @@
+{
+  "root": "<root>",
+  "git": {
+    "head": null
+  },
+  "testsprite": {
+    "workflow": null,
+    "skills": []
+  },
+  "units": [
+    {
+      "path": ".",
+      "languages": [
+        "go"
+      ],
+      "kinds": [
+        "library"
+      ],
+      "evidence": [
+        "file:go.mod"
+      ],
+      "deploy": [],
+      "testsprite": null,
+      "fit": {
+        "verdict": "none",
+        "needs": [],
+        "next": "stop",
+        "notes": [
+          "library: no network surface; test a demo/docs site if there is one"
+        ]
+      }
+    }
+  ],
+  "warnings": []
+}

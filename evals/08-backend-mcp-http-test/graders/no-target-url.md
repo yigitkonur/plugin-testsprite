@@ -1,6 +1,6 @@
 ---
 type: regex
-pattern: 'TARGET_URL'
+pattern: '(^|\n)[^#\n]*TARGET_URL'
 target:
   source: file
   path: test_mcp_server.py

@@ -202,3 +202,26 @@ Written after the build; the sections above are the plan as it stood before.
 - Free spikes U5 and U6 were run and resolved; U7 and U14 were not needed for 0.1.0 and stay open. The credit spike (U1-U4, U9) was **not** run.
 - The first commit in the repository carried a personal email address as author. It was caught before anything was pushed and reset to the GitHub noreply identity; `scripts/secret_scan.sh` now fails on any other commit identity.
 - About 4 USD of model usage was spent on live sessions, spikes and evals, within the cap set in section 0.
+
+## 9. Second check and 0.1.1
+
+A second read of the shipped 0.1.0 (every skill, reference, template, agent, hook, helper and script) against the installed CLI's `--help`, `--dry-run` and package source, plus `sprite-detect` on six real local repositories, found these. Each was reproduced before it was fixed, and each fix has a test that failed first.
+
+| # | Finding | How it was seen | Fix in 0.1.1 |
+|---|---|---|---|
+| F1 | The Stop gate and the "linked units" line only saw a git-tracked `.testsprite/config.json`; right after `/testsprite:init` (or with dot-directories ignored globally) the session recorded no linked unit and the gate never fired | scratch repo: untracked config, edit, gate silent; tracked, gate blocks | `linkedRoots` = tracked, untracked-not-ignored and nearest-ancestor configs, by real path |
+| F2 | `if: Bash(testsprite *)` and `if: Bash(npx @testsprite/*)` missed `npx -y ...`, `./node_modules/.bin/testsprite`, `env X=1 testsprite ...`, `time testsprite ...`, so the guard never ran for them | live `claude -p` with the 0.1.0 tag: 1 of 4 delete commands was stopped, the other 3 reached the CLI and were stopped only by the missing key | `hooks/guard.sh` prefilter; live, 4 of 4 stopped; unrelated Bash call about 10 ms and no Node |
+| F3 | `verify` had no path for a new frontend test on a local app (`test create` has no `--local`) | the CLI rejects `--local` on `test create` (exit 5) | create, then `test run <id> --local <port>` |
+| F4 | Guard rules: `test cancel` was read-only; `test flaky` ignored `confirm_runs_over`; `ci init --set-secret` unguarded; boolean flags missing from the parser | reading `lib/guard-rules.mjs` against `--help` | fixed, with tests |
+| F5 | `sprite-detect` read test files and `examples/` as servers, and cargo feature names as dependencies | mcpkit (Go) and a Rust crate with `mcp` features | ignored paths and TOML prose; two fixtures |
+| F6 | Batch accounting said the arrays are in the summary file, omitted `skippedIntegration`, and omitted the 50-run in-flight cap | `test run --help`, `dist/lib/response-schemas.js` | text corrected |
+| F7 | `testsprite doctor` always warns "run `testsprite setup`"; the nag opt-out does not cover it | `doctor.js` has no env check | audit and cli-surface say to ignore it |
+| F8 | Neither agent had ever run in a real session | no live row | both dispatched live (see below) |
+| F9 | The Stop-gate verdict check accepted any "verified" | regex | tightened; still off by default |
+
+Residual: a library that really implements an HTTP transport (mcpkit's `server/`) still reads as an API. The evidence is printed and `init` asks before anything is created.
+
+**Agents, live.** `failure-triager` on the two eval-07 bundles: read `triage.md` through `${CLAUDE_PLUGIN_ROOT}`, returned one single-line row per run, bundle A `plan-defect` (high) and bundle B `app-bug`, rejected the bundle's own "recommended fix target: product", left the bundles untouched. `coverage-auditor` on a fixture repo with a stub CLI that answers every call in `--dry-run` mode: read `project-fit.md`, ran `sprite-detect`, returned all six sections, labelled the canned suite data as canned, started nothing, `git status` clean.
+
+**Verification, as run for 0.1.1:** 164 tests pass (detect 40, state and ref 19, hooks 105); flag-trace 161 mentions, 0 problems; `claude plugin validate --strict` passes on the manifest, marketplace, skills and agents; always-on 352 tokens; secret scan clean. About 1 USD of model usage; no TestSprite call, no credit.
+
