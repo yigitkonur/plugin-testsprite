@@ -24,6 +24,7 @@ Ask whether the TestSprite GitHub App already gates the project (portal setting)
 - **B:** replace the placeholder's `run:` with the deploy commands ending in `echo "url=<preview>" >> "$GITHUB_OUTPUT"`; the platform token goes in its own secret.
 - **Keep what the template fixes:** `ci run ... --target-url "$PREVIEW_URL" --fail-on-skipped --summary-file`, the global install of the CLI with no version pin, fork and draft PRs skipped, the upload step on `if: always()`, job-level `concurrency`.
 - **Never** re-judge pass/fail in YAML (`jq` plus `exit 1`). The exit code of `ci run` is the gate.
+- `ci run` dispatches the same fresh, wave-ordered batch as `test run --all` (CLI 0.15.0 source: `ci.js` calls `runTestRunAll`), not a replay, so frontend members get agent-judged verdicts. A replayed pass would be a weaker gate (see [agent-loop](agent-loop.md)).
 
 ## 4. Secret
 

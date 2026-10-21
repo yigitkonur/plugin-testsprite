@@ -50,8 +50,11 @@ The first time this plugin met the live service. It was a one-month trial accoun
 4. **Models will try to reset app state with a token they find in the source.** The verify skill now forbids resetting or seeding the app's data to make a test pass.
 5. **Absolute paths:** agents write `mkdir -p /abs/repo/.testsprite/tmp`, so the guard now treats an absolute path into the session cwd's `.testsprite/` like the relative one.
 
+## Answered after the field test
+
+- `ci run` replay or fresh? **Fresh**: CLI 0.15.0's `ci.js` imports and calls `runTestRunAll`, the `test run --all` path (read from the installed package; no credits). `ci-shapes.md` says so.
+- `sprite-detect` now reads the port default of a plain `node <file>` start script (`PORT || 4173`, `.listen(4173)`); on Seatbook it reports `npm start on :4173 (server.mjs default)`.
+
 ## Still open
 
-- `ci run`: does it replay or run fresh? Its help does not say, and the replay lesson makes this matter for a gate. Not run.
 - Frontend generation with a stored test account (signed-in exploration).
-- `sprite-detect` misses a plain `node server.mjs` start script with `PORT || 4173` (no `devServer`); the saved `targetUrl` covers linked repos.

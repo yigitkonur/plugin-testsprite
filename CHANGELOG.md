@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.1
+
+- **`sprite-detect` reads the port of a plain `node <file>` start script** (`PORT || 4173`, `.listen(4173)`). Before, a zero-dependency Node app reported no dev server, so `verify` had to ask for the port.
+- **`ci run` is a fresh run, not a replay** (CLI 0.15.0 source: `ci.js` calls `runTestRunAll`, the `test run --all` path), so a CI gate gets agent-judged frontend verdicts. `ci-shapes.md` says so.
+- **New eval case `11-linked-change-verifies`:** a linked repo and an ordinary change request that never mentions TestSprite. With the plugin it scored 1.00 and `verify` fired; without it, 0.00.
+- **README rewritten**, with the install commands checked against `claude plugin --help` and a fresh marketplace install.
+
 ## 0.2.0
 
 Steering fixes measured in headless sessions, then a field test against the real TestSprite cloud ([docs/design/11-field-test.md](docs/design/11-field-test.md)).
