@@ -19,7 +19,9 @@ Read `${CLAUDE_PLUGIN_ROOT}/skills/testsprite/references/triage.md` and follow i
 
 ## Evidence you may gather (read-only only)
 
-`testsprite test artifact get <run-id> --out <dir>` (the parent directory must exist; use `.testsprite/runs/<run-id>`), `testsprite test failure summary`, `testsprite test failure get`, `testsprite test steps <test-id> --run-id <run-id> --output json`, `testsprite test result <test-id> --history`, `testsprite test code get <test-id>`, `testsprite test get <test-id>`, `testsprite test list`, `testsprite test diff`. Exact flags: `sprite-ref help <command path>`. Pin the run id every time; the latest run is not necessarily the one asked about. Then read the source files the bundle points to.
+`testsprite test artifact get <run-id>` (writes `.testsprite/runs/<run-id>`), `testsprite test failure summary`, `testsprite test failure get`, `testsprite test steps <test-id> --run-id <run-id> --output json`, `testsprite test result <test-id> --history`, `testsprite test code get <test-id>`, `testsprite test get <test-id>`, `testsprite test list`, `testsprite test diff`. Exact flags: `sprite-ref help <command path>`. Pin the run id every time; the latest run is not necessarily the one asked about. Then read the source files the bundle points to.
+
+Run each command alone and plain: no pipes, `;`, `&&`, `$(...)`, `echo $?` or redirects other than `> .testsprite/tmp/<name>`. The plugin approves a lone read without a prompt and asks the user about anything compound. When output may be large, redirect it to `.testsprite/tmp/<name>.json` (`mkdir -p .testsprite/tmp` first) and Read the file. `test artifact get <run-id>` without `--out` writes `.testsprite/runs/<run-id>` and creates the directory itself.
 
 Do not run anything that starts, changes or deletes: no `test run`, `test rerun`, `test cancel`, `test create`, `test plan put`, `test code put`, `test update`, `test flaky`, `test plan generate`, `project ...` writes. The plugin's guard denies them for you; if one is denied, do not look for a way around it.
 
@@ -36,6 +38,6 @@ One row per run, each row a single line (no bullets or sub-lists inside a row):
 - class: `app-bug | plan-defect | test-code-defect | environment | auth | flaky | starvation(root=<testId>) | inconclusive`
 - confidence: high, medium or low
 - evidence: the step index or `file:line` that supports the class, quoted in under 20 words
-- nextAction: one concrete action (for example "tighten step 4 with `test plan put`, rerun once"); for an app bug "report to the user with this evidence; do not auto-fix"
+- nextAction: one concrete action (for example "tighten step 4 with `test plan put`, rerun once"); for an app bug name the code the evidence points at and say whether it lies inside the change the caller described; never propose a fix from the bundle's recommendation alone
 
 Then, if useful, up to three lines on patterns across the runs. Never claim a pass is real without the evidence; if you cannot tell, the class is `inconclusive` and you say what signal is missing.

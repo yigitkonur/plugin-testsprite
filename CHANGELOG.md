@@ -1,5 +1,48 @@
 # Changelog
 
+## 0.2.0
+
+Steering fixes measured in headless sessions, then a field test against the real TestSprite cloud ([docs/design/11-field-test.md](docs/design/11-field-test.md)).
+
+- **Verify before "done", by default.** In a linked repo the SessionStart text now tells the model to get a verdict with the verify skill, or end with "Unverified because <reason>". It also shows where the app runs (`targetUrl` in `.testsprite/config.json`, written by `init`).
+  - On an ordinary change request: 0/5 with 0.1.1 → 5/5 with the directive.
+  - Exempt work (docs, a question, a test file): 0/6 false triggers.
+  - The Stop gate stays off by default, by the rule set in advance.
+- **Session spend consent.** The guard asks before the first billable run of a session and again at every fifth, so a fix-and-rerun loop cannot spend silently.
+- **Prompt-free reads.** The guard answers `allow` for exactly one thing: a lone read-only `testsprite` or `sprite-*` command. That means no pipes, `;`, `$()` or other shell syntax, no `--endpoint-url`, and `--out` or redirects only into `.testsprite/`. The literal `mkdir -p .testsprite/tmp|runs` is allowed too. Your own deny and ask rules still win.
+  - In default permission mode the 0.1.1 `failure-triager` was denied its first read and returned `inconclusive`; now it works with 0 prompts.
+  - The agents are told to run each read alone.
+- **TestSprite's own tunnel is first-class.** New reference `local-and-tunnels.md`:
+  - saved loopback projects tunnel by themselves;
+  - `tunnel start --ttl` + `--tunnel-client` (on `test run` only);
+  - owned vs borrowed tunnels;
+  - local runs never store or replay code;
+  - no generation on local projects;
+  - limits and exit codes.
+
+  `project-fit` and `verify` no longer point frontends at third-party tunnels.
+- **Replay is not a verdict.** A frontend `test rerun` (`--no-auto-heal` included) replays stored code whose assertions can be just "page loaded". In the field test it passed a deployed bug that a fresh `test run` failed. `verify`, `agent-loop`, `audit` and the skill rules now use a fresh `test run` to verify a change. `--no-auto-heal` on a local run is a guaranteed `blocked`, and the text no longer suggests it.
+- **Backend facts, field-verified:**
+  - values hand over through `__VARS__`;
+  - `TARGET_URL` is not injected;
+  - `__AUTH_CREDENTIAL__` is the raw secret (never print globals);
+  - Auto Cleanup does not cover CLI-authored tests;
+  - a fresh backend run costs 0.2 credit;
+  - auto-assembled integration tests exist, cost 0.2 per batch and can pass vacuously;
+  - `codeVersion` lives in `test code get`;
+  - upload a spec and let it finish processing before generating;
+  - generated tests need triage (4 of 14 broken on a correct app).
+
+  The MCP-over-HTTP template ran green in the sandbox. Heal replaces the stored code (`codeVersion` v1.0 → v2.0).
+- **Smaller fixes:**
+  - the agent-loop no longer forbids fixing your own regression;
+  - the triage heuristic for recorded actions is corrected;
+  - several ids in one `test run` work only through a tunnel;
+  - the Starter plan allows one environment;
+  - a pasted key goes to a 600 `.env` and is never echoed;
+  - never reset app data to make a test pass;
+  - dry runs no longer count as run attempts.
+
 ## 0.1.1
 
 Fixes from a second read of 0.1.0 against the installed CLI 0.15.0, real repositories and real sessions.

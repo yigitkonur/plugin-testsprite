@@ -8,9 +8,11 @@ Credits pay for cloud execution. LLM tokens are spent only by you reading and wr
 |---|---|---|---|
 | Free reads and local helpers | `project list`, `test list`, `test get`, `test result`, `test steps`, `test failure ...`, `test artifact get`, `usage`, `doctor`, `auth status`, `test scaffold`, `test lint`, anything with `--dry-run` | 0 | Run freely |
 | Free cloud writes | `project create`, `project update`, `test create` without `--run`, `test plan accept`, `project credential`, env and sign-in settings, API-spec upload | 0 | Show the drafted plan or code first when it creates tests |
-| Single billable run | `test run <id>`, `test rerun <id>`, `test create ... --run` | FE 0.5; BE rerun 0.2; fresh BE run price not stated, check `usage` | Fine; say what you are running |
+| Single billable run | `test run <id>`, `test rerun <id>`, `test create ... --run` | FE 0.5 (local tunnel runs too); BE 0.2, fresh or rerun (observed) | Say what you are running; the guard asks at the first one in a session and every fifth |
+| Not charged (observed) | a run refused before it starts: `blocked` replay through a tunnel, a dead local port, generation refused on a local project or on an empty strategy, several ids against a public target (exit 5) | 0 | Read the message; nothing to refund |
 | Fan-out | `test run --all`, `test rerun --all`, many ids in one command, `test create-batch --run`, `testlist run`, `ci run`, `test flaky` with many runs | each member bills | Tell the user the count and the estimate; the guard asks |
-| Billed per stage | `test plan generate` | amount not published; a stage already done is not charged twice | Background; ask first; a frontend project with no stored test account explores public pages only and still bills |
+| Billed per stage | `test plan generate` | not published; observed: backend from a spec 3 credits (strategy + proposals, 42 proposals, 17 s); frontend 5 credits (exploration 41 s + strategy + proposals, 3 proposals). A stage already done is not charged twice | Background; ask first; a frontend project with no stored test account explores public pages only and still bills |
+| Auto-assembled integration tests | the first `test run --all` on a backend project with a produces/needs chain may generate one; every later batch runs it after the waves | 0.2 each per batch | Read its code once; delete it if it is hollow ([authoring-backend](authoring-backend.md)) |
 | One-off | PRD upload (`project docs upload --role prd`) | 0.5 per document; `api-doc` is free | Ask |
 | Recurring | `schedule create`, `schedule update --cron` | each firing bills like a run; plan-gated | Ask; the CLI prints frequency and estimate first |
 

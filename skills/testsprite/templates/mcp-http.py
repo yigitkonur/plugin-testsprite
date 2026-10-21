@@ -1,7 +1,7 @@
-# EXPERIMENTAL, UNVERIFIED IN THE SANDBOX.
 # MCP over streamable HTTP, framed by hand because the sandbox has no MCP SDK.
-# Written from the MCP streamable-HTTP transport as commonly implemented, not from a TestSprite document.
-# Before trusting it, read the target server's protocol version and session behavior, and tell the user it is experimental.
+# Ran green in TestSprite's sandbox against a public MCP server (initialize, tools/list over SSE; field test, CLI 0.15.0).
+# Before using it, read the target server's protocol version and session behavior; servers differ.
+# __AUTH_HEADERS__ carries the project credential: point this only at your own server.
 import json
 import requests
 

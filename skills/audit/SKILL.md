@@ -17,7 +17,7 @@ Scope: $ARGUMENTS (a unit path; empty means every linked unit). Read the `testsp
 
 ## 1. Preflight (free)
 
-`testsprite auth status --output json`, `testsprite usage`, `testsprite doctor` (network: connectivity and key validity). Doctor always warns "Verify skill: not installed here; run `testsprite setup`" (the nag opt-out does not cover it): ignore that line and never run `setup` because of it.
+`testsprite auth status --output json`, `testsprite usage`, `testsprite doctor` (network: connectivity and key validity), each as its own call with no pipes, `export` or `;` (a lone read needs no approval). Doctor always warns "Verify skill: not installed here; run `testsprite setup`" (the nag opt-out does not cover it): ignore that line and never run `setup` because of it.
 
 ## 2. Coverage assessment (free, isolated)
 
@@ -27,7 +27,7 @@ Delegate to the `coverage-auditor` agent with the detection JSON and the project
 
 Counts times price: frontend 0.5 credit, backend 0.2. Offer, with costs:
 
-- (a) failing and blocked only: `testsprite test rerun --all --project <id> --status failed,blocked --wait`
+- (a) failing and blocked only, replayed: `testsprite test rerun --all --project <id> --status failed,blocked --wait` (cheap signal; a frontend replay pass is not proof, see [agent-loop](../testsprite/references/agent-loop.md))
 - (b) everything fresh: `testsprite test run --all --project <id> --wait`
 - (c) named tests
 - (d) no runs
@@ -36,7 +36,7 @@ A rerun needs a prior replayable run; never-run tests need `test run`. **Wait fo
 
 ## 4. Run, in the background
 
-The chosen command with `--timeout 900` and `--summary-file .testsprite/tmp/summary.json`; optionally `--report junit --report-file .testsprite/tmp/junit.xml`. Frontend reruns auto-heal by default; add `--no-auto-heal` for a strict regression pass. Send stdout (`--output json`) and stderr to files under `.testsprite/tmp/`.
+The chosen command with `--timeout 900` and `--summary-file .testsprite/tmp/summary.json`; optionally `--report junit --report-file .testsprite/tmp/junit.xml`. Frontend reruns are replays of stored code with auto-heal on; a replay pass is a weak signal (thin stored assertions). Option (b) (fresh runs) is the one that re-judges every plan. Never add `--no-auto-heal` to a local tunnel run (`blocked`). Run `mkdir -p .testsprite/tmp`, then send stdout (`--output json`) and stderr to files there (`> .testsprite/tmp/<name>.json 2>&1`).
 
 ## 5. Account for every member
 
@@ -48,7 +48,7 @@ Pass failing run ids to `failure-triager` (at most five per call; several calls 
 
 ## 7. Heal check
 
-For each **passed** frontend rerun compare `codeVersion` before and after (`testsprite test get <id>`). A changed version on a healed pass: flag "heal modified stored code" (whether heal overwrites stored code is unverified). Do not count a healed pass as release proof.
+For each **passed** frontend rerun on a public target compare `codeVersion` before and after (`testsprite test code get <id> --output json`; a local tunnel run never stores code). A higher version means heal re-authored and replaced the stored script: flag "heal modified stored code". Do not count a healed or replayed pass as release proof.
 
 ## 8. Act per class (show each write first)
 

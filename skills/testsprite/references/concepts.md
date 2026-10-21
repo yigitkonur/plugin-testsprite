@@ -58,11 +58,12 @@ PRD (optional) and API spec feed, with live exploration (FE), a feature map, the
 | Feature | What it is | Status |
 |---|---|---|
 | Exploration | Parallel cloud agents walk the live FE app and record real selectors and copy | verified |
-| Auto-heal | On an FE rerun, if the page drifted but the feature works, the agent re-binds the script; real bugs stay failed. On by default for CLI reruns; `--no-auto-heal` opts out | verified; **whether the healed code replaces the stored version is unverified** (CLI help says yes, portal docs say no) |
-| Rerun | Replays what is saved; billed like a fresh run | verified |
+| Auto-heal | On an FE rerun, if the page drifted but the feature works, the agent re-authors the script; real bugs stay failed. On by default for CLI reruns; `--no-auto-heal` opts out | field-verified: **the healed code replaces the stored version** (`codeVersion` went up) |
+| Rerun | Replays what is saved; billed like a fresh run. A frontend replay runs stored code whose assertions can be just "page loaded": a fresh `test run` (agent + AI judge) is the verdict on a change | field-verified |
 | Flaky check | Replays N times with auto-heal off | verified |
-| Dynamic variables | A value one BE test captures for later tests; declared with `--produces` / `--needs` | flags verified; **how Python code exports the value is unverified** |
+| Dynamic variables | A value one BE test captures for later tests; declared with `--produces` / `--needs`. The runner records the producer's HTTP responses and the consumer reads `__VARS__["<name>"]` | field-verified |
 | Dependency chains | A failed producer leaves consumers blocked, not failed | verified |
-| Auto cleanup | Deletes records created by generated tests after a run | portal-documented; **coverage of CLI-authored tests is unverified**, so write explicit teardown |
+| Auto cleanup | Deletes records created by generated tests after a run | portal-documented; **does not clean up after CLI-authored tests** (field-verified), so write an explicit teardown |
+| Integration tests (auto-assembled) | Generated from a produces/needs chain on the first backend `--all`; run after each batch at 0.2 | field-verified; can pass vacuously, read once |
 | Data Flow view, Auto-Auth | Portal inspection panel; token refresh before each BE run (Pro) via `project auto-auth` | portal / verified |
 | "Smart Rerun" | Appears in no documentation | treat as marketing; do not design around it |

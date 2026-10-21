@@ -225,3 +225,18 @@ Residual: a library that really implements an HTTP transport (mcpkit's `server/`
 
 **Verification, as run for 0.1.1:** 164 tests pass (detect 40, state and ref 19, hooks 105); flag-trace 161 mentions, 0 problems; `claude plugin validate --strict` passes on the manifest, marketplace, skills and agents; always-on 352 tokens; secret scan clean. About 1 USD of model usage; no TestSprite call, no credit.
 
+## 10. Third check and 0.2.0: steering, then the real cloud
+
+**Steering round (offline, headless Claude Code in default permission mode).**
+- **Verify directive:** a one-line directive in the SessionStart text of linked repos took "verify or say why not" from 0/5 (0.1.1) to 5/5 on an ordinary change request. Exempt work (docs, a pure question, a test-file edit) triggered 0/6.
+- **Stop gate:** stays off by the rule set in advance.
+- **Session consent:** the guard now asks at the first billable run of a session and at every fifth.
+- **Strict-read `allow`:** it answers `allow` for a lone read-only command it can vouch for, so the two read-only agents are not prompted per read. A default-mode A/B showed the 0.1.1 triager denied and returning `inconclusive`, and the new one working.
+
+**Field test.** The real TestSprite cloud ran against a purpose-built app ([11-field-test.md](11-field-test.md)): 25.2 credits, U1–U4 and U9–U12 answered. Three pieces of plugin text were wrong and are fixed:
+- local testing must lead with TestSprite's own tunnel;
+- `--no-auto-heal` on a local run is a guaranteed `blocked`;
+- a frontend replay is not a verdict, because the stored script's assertions can be just "page loaded" (a strict replay passed a deployed bug that a fresh run failed).
+
+Dogfooding `verify` on a linked repo failed twice before passing. Each failure led to a text fix: show the saved target URL; never start a second copy of the app; do not reset app data.
+

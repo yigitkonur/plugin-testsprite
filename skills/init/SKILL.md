@@ -52,7 +52,7 @@ Show the command, get a yes, then run it. Exact syntax: `sprite-ref help project
 
 ## 8. Record the link
 
-Write `{"projectId": "<id>"}` to `<unit>/.testsprite/config.json`. Add `.testsprite/failure/`, `.testsprite/runs/` and `.testsprite/tmp/` to `.gitignore`. If the app tags elements with a custom attribute, set it with `testsprite project update <project-id> --test-id-attributes <attr>,data-testid`.
+Write `{"projectId": "<id>", "targetUrl": "<the project's URL>"}` to `<unit>/.testsprite/config.json` (`targetUrl` is optional and read only by this plugin: it tells later sessions where the app runs, for example `http://localhost:4173` for a local project). Add `.testsprite/failure/`, `.testsprite/runs/` and `.testsprite/tmp/` to `.gitignore`. If the app tags elements with a custom attribute, set it with `testsprite project update <project-id> --test-id-attributes <attr>,data-testid`.
 
 ## 9. Sources
 
@@ -60,7 +60,7 @@ An API spec found by detection: `testsprite project docs upload <file> --project
 
 ## 10. Tests
 
-- **Generate** (V3, deployed frontend, or any backend with a spec): run `testsprite test plan generate --project <id>` in the background after the user's yes (it bills per stage and frontend exploration takes minutes; a project with no stored test account explores public pages only and still bills). Read the printed table against the source; drop proposals for flows that do not exist, duplicates and vague ones; propose an `--only` list; on the user's yes make **one** call: `testsprite test plan accept --project <id> --only prop_1 prop_2 ...` (a subset discards the rest). Editing a proposal is portal-only.
+- **Generate** (V3, deployed frontend, or any backend with a spec): run `testsprite test plan generate --project <id>` in the background after the user's yes (it bills per stage and frontend exploration takes minutes; a project with no stored test account explores public pages only and still bills). Read the printed table against the source; drop proposals for flows that do not exist, duplicates and vague ones; propose an `--only` list; on the user's yes make **one** call: `testsprite test plan accept --project <id> --only prop_1 prop_2 ...` (a subset discards the rest). Editing a proposal is portal-only. For a backend spec, wait for the upload to finish processing before the first generate (an early generate freezes an empty strategy that only the portal can rebuild). Expect some accepted generated tests to be broken on their first run (4 of 14 in the field test: fixed literals shared between concurrent tests, hardcoded ids, a missing producer declaration): triage their first red runs as test defects before suspecting the app.
 - **Hand-author** (local projects, V2, or no inputs): frontend per [authoring-frontend](../testsprite/references/authoring-frontend.md), backend per [authoring-backend](../testsprite/references/authoring-backend.md). Validate with `testsprite test lint`. Show every plan or code file once before creating it.
 
 ## 11. Smoke-run two or three, not all

@@ -22,7 +22,7 @@ TestSprite's cloud can only test something it can **reach over the network**. Th
 
 | Repo | Fit | Path |
 |---|---|---|
-| Web frontend (SPA, SSR, static, docs site) | full | URL, or a local port through a tunnel (V3 account) |
+| Web frontend (SPA, SSR, static, docs site) | full | URL, or an app on your machine through TestSprite's own tunnel (`project create --local <port>`, V3 account, any plan) |
 | REST / OpenAPI backend | full if it has a public URL | spec upload or hand-written tests |
 | GraphQL | partial | hand-written POST tests |
 | MCP server over streamable HTTP, deployed | partial | hand-written JSON-RPC tests (experimental template) |
@@ -46,9 +46,9 @@ Authenticate yourself: create a workspace key in the TestSprite portal and run `
 
 ## Safety model
 
-- **Spend guard** (`PreToolUse`, on by default): asks before `test run --all`, large id lists, batch `--run`, `ci run`, `plan generate`, flaky checks, schedules and PRD uploads; before deletions and `--force` overwrites; before a secret goes on the command line (`--password`, `--credential`, `--api-key`, ...); and before `setup`/`agent install` without `--no-agent`. It only ever escalates to `ask` or `deny` and never returns `allow`. Anything it cannot parse passes silently: it raises friction on common mistakes and is not a security boundary. It also keeps the two subagents read-only.
-- **Session hook** (`SessionStart`): silent unless the repo is linked to a TestSprite project (`.testsprite/config.json`). In a linked repo it injects a few facts (CLI version, auth source, linked units).
-- **Stop gate** (`Stop`, **off by default in 0.1.0**): once per change set, asks for a verdict or an explicit "unverified because ...". Enable it with the `stop_gate` plugin setting once you want it; it ships off until its false-positive rate is measured.
+- **Spend guard** (`PreToolUse`, on by default): asks before `test run --all`, large id lists, batch `--run`, `ci run`, `plan generate`, flaky checks, schedules and PRD uploads; before deletions and `--force` overwrites; before a secret goes on the command line (`--password`, `--credential`, `--api-key`, ...); before `setup`/`agent install` without `--no-agent`; and, in a linked repo, before the first billable run of a session and every fifth after it, so a fix-and-rerun loop cannot spend silently. It escalates to `ask` or `deny`, and answers `allow` for exactly one thing: a lone read-only command (one `testsprite` or `sprite-*` command, no pipes, `;`, `$()` or other shell syntax, no `--endpoint-url`, `--out` only under `.testsprite/`, output redirected only to `.testsprite/tmp/`), so the two subagents are not prompted for every read. Your own deny and ask rules still win over an `allow`. Anything else it cannot vouch for passes silently to the normal permission flow: it raises friction on common mistakes and is not a security boundary. It also keeps the two subagents read-only.
+- **Session hook** (`SessionStart`): silent unless the repo is linked to a TestSprite project (`.testsprite/config.json`; an optional `targetUrl` there tells later sessions where the app runs). In a linked repo it injects a few facts (CLI version, auth source, linked units and their app URL) and one standing instruction: before reporting a code change done, get a TestSprite verdict with the verify skill or end with `Unverified because <reason>`. Docs, config and test-file edits are exempt.
+- **Stop gate** (`Stop`, **off by default**): once per change set, asks for a verdict or an explicit "unverified because ...". The session instruction above already steers most turns (in 5 of 5 headless sessions with an ordinary change request the model invoked verify and ended with a verdict or a reasoned "Unverified because"; 0.1.1 did so in 0 of 5), so the gate is an opt-in backstop. Enable it with the `stop_gate` plugin setting.
 - Settings (`userConfig`): `guard` (true), `stop_gate` (false), `confirm_runs_over` (3).
 - The plugin sends nothing anywhere and sets no telemetry variables. The CLI has its own telemetry; see its docs (`TESTSPRITE_NO_TELEMETRY`).
 
@@ -56,17 +56,19 @@ Authenticate yourself: create a workspace key in the TestSprite portal and run `
 
 About 230 to 350 tokens of always-on context, as reported by `claude plugin details testsprite` (about 230 for an installed copy, about 350 when loaded with `--plugin-dir`; the tool's own estimate, covering two model-invocable skills, two agents and three short user-only skill descriptions). Hooks add no model context except a short note in linked repos. Everything else loads when a skill or agent runs.
 
-## What is not verified yet
+## Field-tested
 
-Be skeptical of these; the plugin tags them "unverified" wherever it uses them.
+0.2.0 was checked against the real TestSprite cloud with a purpose-built app (an event-RSVP page plus a JSON API) on a trial account. It covered:
 
-- **The TestSprite cloud was never called while building this.** No account, key or credit was used. Everything that depends on cloud behavior (plan generation, runs, failure bundles, dependency exports) comes from the CLI's help and documentation, not from a live run. Offline behavior (detection, state, hooks, the guard, validation, fit verdicts) is tested.
-- Backend dependency hand-off (`--produces` / `--needs`): how a producer's Python exports a value is undocumented. Guidance prefers self-contained tests.
-- Whether `TARGET_URL` is injected into backend tests: not relied on; templates use an explicit `BASE_URL`.
-- Whether auto-heal overwrites stored test code (the CLI help and the portal docs disagree) and whether Auto Cleanup covers CLI-authored tests.
-- The MCP-over-HTTP test template has not run in TestSprite's sandbox.
+- local frontend tests through TestSprite's tunnel: a green baseline, two deliberate bugs caught exactly as predicted, fixes verified;
+- the plugin's triager on the real failure bundles;
+- backend tests on a public deploy;
+- spec-driven and exploration-based generation;
+- heal.
 
-`docs/design/09-evidence-ledger.md` lists every claim with its source and every unknown with how to close it.
+The plugin's guidance changed where the service behaved differently from its docs. Two examples: a frontend replay is not a verdict (a fresh `test run` is), and backend values hand over through `__VARS__`. See [`docs/design/11-field-test.md`](docs/design/11-field-test.md).
+
+Still not exercised: whether `ci run` replays or runs fresh; frontend generation with a signed-in test account; Windows. `docs/design/09-evidence-ledger.md` lists every claim with its source.
 
 ## Development
 
@@ -79,7 +81,7 @@ claude plugin validate --strict .claude-plugin/plugin.json
 claude plugin eval . --help           # behavior evals (see evals/README.md; every run is a paid model call)
 ```
 
-A nightly workflow installs the newest published CLI and fails when a command or flag the plugin cites is gone. `AGENTS.md` has the release rules. The design notes (why each piece exists, hooks considered and rejected, evidence) are in [`docs/design/`](docs/design/README.md).
+A nightly workflow installs the newest published CLI and opens an issue when a command or flag in the pinned CLI surface is gone, or plugin text no longer traces to it. `AGENTS.md` has the release rules. The design notes (why each piece exists, hooks considered and rejected, evidence) are in [`docs/design/`](docs/design/README.md).
 
 ## License
 

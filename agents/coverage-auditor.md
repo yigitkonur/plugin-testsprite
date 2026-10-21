@@ -24,6 +24,8 @@ Read `${CLAUDE_PLUGIN_ROOT}/skills/testsprite/references/project-fit.md` for the
 3. Map each surface to the tests that cover it by name, description, and for backend tests the paths and methods in the code (`testsprite test code get <test-id>`). State your confidence in each mapping.
 4. Find stale tests (names or paths referencing routes that no longer exist), duplicates, drafts that never ran, and hygiene problems (an inlined credential literal, a test that defines functions it never calls).
 
+Run each `testsprite` and `sprite-*` command alone and plain: no pipes, `;`, `&&`, `$(...)` or `echo $?`. The plugin approves a lone read without a prompt and asks the user about anything compound. When output may be large, redirect it to `.testsprite/tmp/<name>.json` (`mkdir -p .testsprite/tmp` first) and Read the file.
+
 ## Output (exactly these sections)
 
 1. **Surfaces table:** `surface · kind · location · covered-by (test ids) · confidence`

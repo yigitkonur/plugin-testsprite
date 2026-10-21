@@ -100,18 +100,18 @@ Source keys: see `README.md`. All paths are under `sources/`. Line numbers refer
 
 | ID | Open question | Where it matters | To close | Cost |
 |---|---|---|---|---|
-| U1 | How does a CLI-authored BE producer export `--produces` values from Python, and how does a consumer read them? | `authoring-backend`, doc 01 §9B | Credit spike (doc 08 §3) | ~1 credit |
-| U2 | Is `TARGET_URL` injected into BE tests? (vendor example uses it; vendor scaffold hard-codes `BASE_URL`) | templates | Credit spike | 0.2 |
-| U3 | Does FE auto-heal overwrite stored code? CLI help says yes ("replaces the stored version"); portal says no | `verify`, `audit` step 7 | Credit spike: compare `codeVersion` before/after a heal | 1.5 |
-| U4 | Does Auto Cleanup cover CLI-authored BE tests? | teardown guidance | Credit spike | 0.4 |
+| U1 | How does a CLI-authored BE producer export `--produces` values from Python, and how does a consumer read them? | `authoring-backend`, doc 01 §9B | **Resolved (field test, doc 11):** the runner publishes the producer's response fields in `__VARS__`; the consumer reads `__VARS__["rsvp_id"]` | ~1 credit |
+| U2 | Is `TARGET_URL` injected into BE tests? (vendor example uses it; vendor scaffold hard-codes `BASE_URL`) | templates | **Resolved (field test, doc 11):** not injected (no env var, no global) | 0.2 |
+| U3 | Does FE auto-heal overwrite stored code? CLI help says yes ("replaces the stored version"); portal says no | `verify`, `audit` step 7 | **Resolved (field test, doc 11):** yes, `codeVersion` v1.0 → v2.0 after a heal rerun | 1.5 |
+| U4 | Does Auto Cleanup cover CLI-authored BE tests? | teardown guidance | **Resolved (field test, doc 11):** no; records stayed. Teardown required | 0.4 |
 | U5 | The exact `agent_type` string for a plugin subagent in `PreToolUse`; presence of `run_in_background` in `tool_input` (spec says present) | guard read-only enforcement | **Resolved for `agent_type` (build spike, Claude Code 2.1.302):** a throwaway plugin `spike` with agent `probe` logged `agent_type: "spike:probe"` and an `agent_id` in the `PreToolUse` input, so the guard matches `<plugin>:<agent>` as well as the bare name. `run_in_background` still unobserved | 0 |
 | U6 | Does `` !`cmd` `` run when the *model* invokes a skill? (spec: before Claude sees it; SwiftUI plugin observed no) | `verify` design (already independent of it) | **Resolved (build spike, 2.1.302):** it runs on both paths. A user-invoked skill and a model-invoked skill (via the Skill tool) each returned their `echo` marker. The design keeps `verify` independent of it anyway | 0 |
 | U7 | Does `paths:` keep a skill out of the always-on listing? | budget | Free spike (`claude plugin details`) | 0 |
 | U8 | `context: fork` + `background` default | **Moot**: `audit` is not forked | — | — |
-| U9 | Does a hand-rolled MCP streamable-HTTP test work in the requests-only sandbox incl. SSE? (template in doc 04 §6 is from the MCP transport as I know it, **not** from a file in `sources/`) | doc 04 §6, Q13 | Credit spike | 0.4 |
-| U10 | V2 vs V3 detection | `init` branch | **Resolved in shape**: `auth status --output json` exposes `v3Enabled` (E11). Real-account values unverified | 0 |
-| U11 | Fresh BE run price per test | cost messages | `usage` → real `creditsPerRun`; a spike run | 0.2 |
-| U12 | Does `docs upload --role api-doc` on an *existing* project add endpoints? (portal says the endpoint list is locked after creation) | `init` step 10 on re-runs | Credit spike or portal check | small |
+| U9 | Does a hand-rolled MCP streamable-HTTP test work in the requests-only sandbox incl. SSE? (template in doc 04 §6 is from the MCP transport as I know it, **not** from a file in `sources/`) | doc 04 §6, Q13 | **Resolved (field test, doc 11):** passed against a public streamable-HTTP server | 0.4 |
+| U10 | V2 vs V3 detection | `init` branch | **Resolved (field test, doc 11):** real account `v3Enabled: true` | 0 |
+| U11 | Fresh BE run price per test | cost messages | **Resolved (field test, doc 11):** 0.2 credit | 0.2 |
+| U12 | Does `docs upload --role api-doc` on an *existing* project add endpoints? (portal says the endpoint list is locked after creation) | `init` step 10 on re-runs | **Resolved (field test, doc 11):** works only after the upload finished processing; an early generate froze an empty strategy (portal-only rebuild) | small |
 | U13 | Can `claude plugin eval` exercise a **user-only** skill by writing its slash command in `prompt.md`? | eval cases 2–3 | Free spike | 0 |
 | U14 | Are user-only skills really outside the model's context? Spec says "Hidden" (S15 table); `plugin details` still counts ~20–40 tokens each | budget accounting | `/context` with/without the plugin | 0 |
 

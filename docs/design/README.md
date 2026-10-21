@@ -18,6 +18,7 @@ The plugin is a **steering layer** for the TestSprite CLI: skills for judgment, 
 | `08-build-test-risks.md` | Phased build, how the plugin is tested, risks, open questions with defaults |
 | `09-evidence-ledger.md` | Every claim traced to a source line; the unverified list; the corrections log |
 | `10-execution-plan.md` | How the design became this repository: guardrails, defaults adopted, steps, proofs, deviations |
+| `11-field-test.md` | The first run against the real TestSprite cloud (a purpose-built app): unknowns answered, facts the plugin lacked, steering lessons |
 | `SOURCES.md` | Pins of everything the notes were written from |
 
 ## Evidence tags and source keys

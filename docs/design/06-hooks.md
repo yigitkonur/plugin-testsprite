@@ -61,6 +61,11 @@ The script tokenizes each `testsprite` segment: skips global flags (`--profile <
 
 **The guard never returns `allow`.** `permissionDecision: "allow"` *skips* the user's permission prompt [V SPEC:hooks.md:1958], which would silently widen what the user approved. Silence (exit 0, no JSON) defers to the normal permission flow; the guard only ever escalates to `ask` or `deny`.
 
+> **Reversed in 0.2.0, for one case.** The two read-only agents ran every `testsprite` read through the normal permission flow. Plugin agents cannot set `permissionMode` [V SPEC:sub-agents.md:239] and a skill's `allowed-tools` lasts one turn and does not reach a subagent [V SPEC:skills.md:620], so in a default-mode session each read became a prompt in the main session. Observed live in default mode: the 0.1.1 `failure-triager`'s first `Bash` call was denied and it returned `inconclusive` with no evidence; with the change it ran `test failure summary` and `test artifact get` and returned a row. Earlier live agent checks had missed this because they pre-approved the commands (and the user's own default mode was `bypassPermissions`). The guard therefore answers `allow` for a lone read it can vouch for end to end and nothing else: one segment, no shell syntax (`;&|`$(){}<>*?[]~!#\` or a newline, after removing a trailing redirect into `.testsprite/tmp/`), first token exactly `testsprite` or one of the plugin's `sprite-*` helpers (no env prefix, no wrapper, no `npx`), a read-only command path, no `--endpoint-url` (it would send the key to another host), no secret flag, `--out` only under `.testsprite/`, plus the literal `mkdir -p .testsprite/tmp` and `.testsprite/runs`. A user's own deny and ask rules still win [V SPEC:hooks.md:1958]. Anything else stays silent.
+
+**Session consent (0.2.0).** The guard counts billable run attempts per recorded session and asks at the first and at every fifth, so a fix-and-rerun loop cannot spend silently one single-run command at a time. A denied ask still counts as the attempt; the model reports the denial instead of retrying.
+
+
 ### 3.2 Command classes (cost basis cited per row)
 
 | Class | Commands | Decision | Basis |

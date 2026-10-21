@@ -28,14 +28,19 @@ const decision = (r) => (r.out ? JSON.parse(r.out).hookSpecificOutput.permission
 
 // ---------- guard ----------
 const SILENT = [
-  'testsprite project list', 'testsprite test list --project p1 --output json', 'testsprite test run abc --wait', 'testsprite test run a b c --wait --env staging',
+  'testsprite test run abc --wait', 'testsprite test run a b c --wait --env staging',
   'testsprite test create --type backend --project p --name x --code-file f.py --run --wait', 'testsprite test plan accept --project p --only prop_1 prop_2',
   'testsprite project create --type frontend --name x --url https://x.example.com --password-file ./pw', 'testsprite test run --all --dry-run', 'testsprite test create --plan-template',
-  'testsprite setup --no-agent', 'testsprite setup --from-env --no-agent', 'testsprite test flaky t1 --runs 3', 'testsprite test lint --plan-from-dir ./plans',
-  'testsprite ci init github --project p --env e', 'testsprite frobnicate --all', 'testsprite test run "abc', 'echo hello', 'ls -la', 'testsprite --version',
-  'testsprite test artifact get r1 --out .testsprite/runs/r1', 'testsprite test run --help', 'testsprite usage', 'testsprite project docs upload spec.json --project p --role api-doc',
+  'testsprite setup --no-agent', 'testsprite setup --from-env --no-agent', 'testsprite test flaky t1 --runs 3',
+  'testsprite ci init github --project p --env e', 'testsprite frobnicate --all', 'testsprite test run "abc', 'echo hello', 'ls -la',
+  'testsprite project docs upload spec.json --project p --role api-doc',
   'testsprite test flaky t1 --runs 2', 'testsprite test rerun --skip-terminal a b c', 'testsprite test cancel run_1', 'testsprite test open t1 --no-browser',
   'git commit -m "document the testsprite setup"', 'cat docs/testsprite.md', 'grep -rn "test run --all" docs/testsprite-notes.md',
+];
+// 0.2.0: a lone read the guard can vouch for end to end gets `allow` (so the two read-only agents are not prompted per read)
+const ALLOW = [
+  'testsprite project list', 'testsprite test list --project p1 --output json', 'testsprite test lint --plan-from-dir ./plans', 'testsprite --version',
+  'testsprite test artifact get r1 --out .testsprite/runs/r1', 'testsprite test run --help', 'testsprite usage',
 ];
 const ASK = [
   'testsprite test run --all --project p --wait', 'testsprite test rerun --all --project p', 'testsprite test run a b c d', 'testsprite test create-batch --plans p.jsonl --run --wait',
@@ -56,6 +61,7 @@ const ASK = [
   'testsprite test flaky t1 --runs 4', 'testsprite ci init github --project p --set-secret', 'testsprite ci init github --project p --force --set-secret',
   'testsprite test rerun --skip-terminal a b c d', 'testsprite test rerun --all --skip-terminal --project p',
 ];
+for (const c of ALLOW) test(`guard allow: ${c}`, () => { const r = guard(c); assert.equal(r.code, 0); assert.equal(decision(r), 'allow', r.out); });
 for (const c of SILENT) test(`guard silent: ${c}`, () => { const r = guard(c); assert.equal(r.code, 0); assert.equal(decision(r), 'silent', r.out); });
 for (const c of ASK) test(`guard ask: ${c}`, () => {
   const r = guard(c); assert.equal(r.code, 0);
@@ -63,7 +69,7 @@ for (const c of ASK) test(`guard ask: ${c}`, () => {
   assert.ok(JSON.parse(r.out).hookSpecificOutput.permissionDecisionReason.startsWith('TestSprite:'));
 });
 
-test('guard never returns allow', () => {
+test('guard returns allow only for a lone read: never for silent or ask cases', () => {
   for (const c of [...SILENT, ...ASK]) assert.ok(!/"allow"/.test(guard(c).out), c);
 });
 test('guard messages carry the file-based remedy and never echo the secret', () => {
@@ -91,8 +97,8 @@ for (const agent of ['failure-triager', 'coverage-auditor', 'testsprite:failure-
   test(`guard denies non-read-only testsprite commands for ${agent}`, () => {
     for (const c of ['testsprite test rerun t1', 'testsprite project delete p --confirm', 'testsprite test run t1', 'testsprite test code put t --code-file f.py --expected-version v', 'testsprite test cancel run_1'])
       assert.equal(decision(guard(c, { agent_type: agent })), 'deny', c);
-    for (const c of ['testsprite test list --project p', 'testsprite test artifact get r1 --out d', 'testsprite test failure get r1', 'testsprite test steps t --run-id r1', 'testsprite test code get t --out f.py'])
-      assert.equal(decision(guard(c, { agent_type: agent })), 'silent', c);
+    for (const c of ['testsprite test list --project p', 'testsprite test artifact get r1 --out .testsprite/runs/r1', 'testsprite test failure get r1', 'testsprite test steps t --run-id r1', 'testsprite test code get t --out .testsprite/tmp/f.py'])
+      assert.equal(decision(guard(c, { agent_type: agent })), 'allow', c);
   });
 }
 test('guard: other agents and the main thread are not restricted by the read-only rule', () => {

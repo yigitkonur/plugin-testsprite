@@ -7,7 +7,7 @@ check() {
   hits=$(git ls-files -z | xargs -0 grep -InE "$2" 2>/dev/null | grep -v "^scripts/secret_scan.sh:")
   if [ -n "$hits" ]; then echo "FOUND $1:"; echo "$hits" | head -20; status=1; fi
 }
-check "TestSprite or GitHub key" 'sk-(member|user)-[A-Za-z0-9]{16,}|ghp_[A-Za-z0-9]{20,}|gho_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|AKIA[0-9A-Z]{16}'
+check "TestSprite or GitHub key" 'sk-(member|user)-[A-Za-z0-9]{16,}|tsp_[A-Za-z0-9]{16,}|ghp_[A-Za-z0-9]{20,}|gho_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|AKIA[0-9A-Z]{16}'
 check "private key block" '-----BEGIN [A-Z ]*PRIVATE KEY-----'
 check "assigned API key" 'TESTSPRITE_API_KEY=[A-Za-z0-9_-]{12,}'
 check "personal home path" '/Users/[a-z]+/'

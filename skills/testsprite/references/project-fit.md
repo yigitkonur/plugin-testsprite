@@ -1,6 +1,6 @@
 # Project fit: what TestSprite can and cannot test
 
-**The rule:** TestSprite's cloud can only test something it can **reach over the network and drive as a user or an HTTP client**. A frontend needs a reachable URL (or `localhost` through a tunnel on a V3 account). A backend needs a **public HTTP URL written into the test**; `--local` is refused for backend. Run `sprite-detect` first: it reports kinds, transport and a verdict with the evidence, and reports ambiguity instead of guessing.
+**The rule:** TestSprite's cloud can only test something it can **reach over the network and drive as a user or an HTTP client**. A frontend needs a reachable URL, or an app on this machine reached through **TestSprite's own tunnel** (`project create --local <port>`; V3 account, any plan; see [local-and-tunnels](local-and-tunnels.md)). Never set up a third-party tunnel for a frontend. A backend needs a **public HTTP URL written into the test**; `--local` is refused for backend. Run `sprite-detect` first: it reports kinds, transport and a verdict with the evidence, and reports ambiguity instead of guessing.
 
 Generated proposals are REST-first (GraphQL best-effort; gRPC and JSON-RPC unsupported; WebSocket not mentioned). A hand-authored backend test is arbitrary Python over HTTP, so anything with an HTTP surface is testable by hand even where generation does not apply.
 
@@ -47,7 +47,7 @@ A unit can have several kinds (an MCP server plus a landing site). The testable 
 
 ## Backend reachability
 
-In order of preference: (1) deploy a preview or staging; (2) test an existing staging or production, reads first, writes only with a test account and a teardown test; (3) the user's own tunnel (cloudflared, ngrok, localhost.run). Explain that this makes the dev API and test credentials internet-reachable. **Never start public exposure yourself.**
+TestSprite's tunnel serves frontend tests only, so a backend test needs a public URL. In order of preference: (1) deploy a preview or staging; (2) test an existing staging or production, reads first, writes only with a test account and a teardown test; (3) the user's own tunnel (cloudflared, ngrok, localhost.run), for a backend only. Explain that this makes the dev API and test credentials internet-reachable. **Never start public exposure yourself.**
 
 ## Monorepos
 

@@ -10,7 +10,7 @@ The CLI's exit codes are a contract. With `--output json` the same information i
 | 3 | Auth or missing scope | `testsprite auth status`; name the missing scope; ask the user to fix the key (never handle the key yourself) |
 | 4 | Not found | Check ids and the project; list before guessing |
 | 5 | Validation error or payload too large | Fix the input; run `testsprite test lint` on plans; read the message, it names the field |
-| 6 | Conflict, precondition failed, ambiguous org | Read the message. Stale `codeVersion` on `test code put`: re-fetch with `test get` and retry once. `tunnel-required`: add `--local` or choose a deployed environment. `plan generate` on a local project: author plans by hand |
+| 6 | Conflict, precondition failed, ambiguous org | Read the message. Stale `codeVersion` on `test code put`: the message names the server's version (`test code get <id> --output json` shows it too); retry once with it. `tunnel-required`: add `--local` or choose a deployed environment. `plan generate` on a local project: author plans by hand |
 | 7 | Timeout or unsupported | Ordinary wait: `testsprite test wait <run-id>`; never trigger a new run. Owned local timeout: start a new run with a longer `--timeout`. "Unsupported": read the message (for example a backend too old for `ci run`) |
 | 10 | Service unavailable (also: a second `tunnel start` with the same credential takes over and the first exits 10) | Back off and retry later; do not loop |
 | 11 | Rate limited; also standing limits such as `tunnel_binding_limit` | Back off. For tunnel limits list and stop unused bindings; do not retry automatically |
