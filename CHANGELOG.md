@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.0 - 2026-10-25
+
+- feat: run in Codex too; installs off by default (740c546)
+
 ## 0.2.4 - 2026-10-25
 
 - fix(detect): trim marker evidence so indented matches dedupe (ce9dcb8)
