@@ -48,7 +48,13 @@ flip it on whenever you want with `claude plugin enable testsprite@plugin-testsp
 }
 ```
 
-updates land in the background after your first message of a session (up to ~10 min later) and load on the next start, or right away with `/reload-plugins`. to pull one by hand: `claude plugin update testsprite@plugin-testsprite`.
+updates land in the background after your first message of a session (about 3 min in a test, up to ~10 by design) and load on the next start, or right away with `/reload-plugins`. to pull one by hand: `claude plugin update testsprite@plugin-testsprite`.
+
+**caveat: auto-update skips disabled plugins.** measured: an enabled project install moved to the new version by itself, while installs left off (the "installed but off" recipe above) stayed on the old one. for those, [`scripts/update-installs.mjs`](scripts/update-installs.mjs) walks every project and local install, refreshes the marketplace and runs `claude plugin update` in each. it never changes on/off state, and it repairs git worktrees (claude resolves those to the main checkout and leaves their own record stale). run it by hand, or from cron:
+
+```
+23 */6 * * * flock -n /tmp/tsp-update.lock node /path/to/scripts/update-installs.mjs >> ~/tsp-update.log 2>&1
+```
 
 releases are automatic. once ci is green on `main`, [`release.yml`](.github/workflows/release.yml) bumps the version in both manifests, writes the changelog entry, tags `testsprite--vX.Y.Z` and publishes a github release, whenever something under `skills/`, `agents/`, `hooks/`, `bin/` or `lib/` changed. a version that doesn't change never reaches installs, which is why nobody bumps it by hand.
 
