@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.1 - 2026-10-25
+
+- fix: Codex install from the repo folder; adopt the plugin-kit standard (0640a94)
+
 ## 0.3.0 - 2026-10-25
 
 - feat: run in Codex too; installs off by default (740c546)

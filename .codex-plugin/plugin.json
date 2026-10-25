@@ -1,6 +1,6 @@
 {
   "name": "testsprite",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Unofficial. Steering layer for the TestSprite CLI: set up a repo, audit coverage, verify changes before 'done', and gate CI. Honest about what TestSprite can and cannot test (web, HTTP APIs, hosted MCP; not stdio MCP servers or CLI binaries).",
   "author": { "name": "yigitkonur", "url": "https://github.com/yigitkonur" },
   "homepage": "https://github.com/yigitkonur/plugin-testsprite",
