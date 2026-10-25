@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.4 - 2026-10-25
+
+- fix(detect): trim marker evidence so indented matches dedupe (ce9dcb8)
+
 ## 0.2.3 - 2026-10-25
 
 - fix(detect): argparse only marks a CLI in a file that runs (93142ab)
