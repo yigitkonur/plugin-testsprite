@@ -2,17 +2,23 @@
 
 Working rules for this repo.
 
-## Release rule
+<!-- kit:agents:start -->
+## Releases, versions and installs (shared by every plugin repo)
 
-Releases are automatic. Installers (and auto-update) gate on the computed version, so a shipped change that keeps the same `version` never reaches anyone. After `ci` passes on `main`, `.github/workflows/release.yml` runs `scripts/release.py` (the shared script every plugin repo of this owner vendors): if anything under `skills/`, `agents/`, `hooks/`, `bin/` or `lib/` (the list in `.github/release.json`) changed since the last release tag, it bumps `version` (plugin.json, the marketplace entry and `metadata.version` together), adds a CHANGELOG entry, runs `scripts/release-gate.sh` (the context-budget check) and `claude plugin validate --strict` on the bumped tree, commits `chore(release): … [skip ci]`, tags `v<x.y.z>` and `testsprite--v<x.y.z>` and publishes a GitHub release.
+- **Never bump a version by hand.** `.github/workflows/release.yml` runs after `ci` is green on `main`. `scripts/kit/release.py` reads the conventional-commit subjects since the last release tag (`feat` is a minor, `fix`/`perf`/unprefixed a patch, `type!:` or a BREAKING CHANGE line a major, a minor while the version is 0.x; docs, ci, chore, test, style, build and refactor release nothing) and counts only commits that touch shipped files. It writes every manifest, the marketplace entries and CHANGELOG.md, commits `chore(release): vX [skip ci]`, tags `vX` and `<plugin>--vX` (several plugins: `<plugin>--vX` only) and publishes the GitHub release. `python3 scripts/kit/release.py` with no flags prints what it would do; Actions > release > Run workflow forces a level or a dry run.
+- **One version source: the manifests** (`.claude-plugin/plugin.json`, `.codex-plugin/plugin.json`, the marketplace entry). Never a constant in code; read the manifest at runtime.
+- Installed copies update only when the version string changes, so a change users should get must reach `main` as a releasing commit type (`feat`, `fix`, `perf`, or `!`).
+- **Install policy:** installed globally and off (`"defaultEnabled": false`), switched on per project with `plugin on <name>`. Never document a project-scope install as the way in.
+- `scripts/kit/*`, `scripts/kit.sha256`, `.github/workflows/release.yml`, the `kit:manifests` job in `ci.yml` and the blocks between `kit:` markers in README.md and AGENTS.md are copies from [yigitkonur/plugin-kit](https://github.com/yigitkonur/plugin-kit). Change them there and run its `sync.sh`; `scripts/kit/check-manifests.py` fails CI on a local edit.
+- Before pushing: `python3 scripts/kit/check-manifests.py --validate`, `python3 scripts/kit/secret-scan.py --tree`, `python3 scripts/kit/check-links.py`, then this repo's own checks.
+<!-- kit:agents:end -->
 
-- The bump comes from conventional commits since the last tag: `feat` is a minor, `!:` or `BREAKING CHANGE` is a major (a minor while the version is 0.x), anything else is a patch. A hand-written `## X.Y.Z` entry in CHANGELOG.md wins over the generated one; a `Release-Level: minor|major` line in a commit body raises the level; run the `release` workflow by hand to force a level.
-- Do not bump versions by hand. To force or steer a release, run the `release` workflow from the Actions tab (`bump`, `force`).
 - Never rename the plugin (`testsprite`): installs are recorded under the name.
+- The release file list is `.github/release.json`; `scripts/release-gate.sh` runs the context-budget check on the bumped tree.
 
 ## Claude Code and Codex
 
-One repo, two hosts. `.claude-plugin/plugin.json`, `.codex-plugin/plugin.json` and the marketplace entry carry the same version (`release.py` writes all three; ci checks they match; never hardcode the version in code). Codex rejects a `./` plugin path, so `.agents/plugins/marketplace.json` points at this repo with a `url` source instead of a folder. Codex hooks are `hooks/codex-hooks.json`, run with `--host=codex`: Codex has no `ask` (it logs "unsupported permissionDecision:ask" and runs the command), so the guard turns an ask into a deny that tells the model to get a yes and rerun with `TESTSPRITE_CONFIRMED=1`, and it never returns `allow` there. Settings are `CLAUDE_PLUGIN_OPTION_<KEY>` or `TESTSPRITE_<KEY>`. Skill text mentions neither host's root variable; `skills/testsprite/SKILL.md` has the one "In Codex" section.
+One repo, two hosts. `.claude-plugin/plugin.json`, `.codex-plugin/plugin.json` and the marketplace entry carry the same version (`scripts/kit/release.py` writes all three; ci checks they match; never hardcode the version in code). `.agents/plugins/marketplace.json` uses a `local` source with path `./` (the plugin folder is the repo root), verified with a throwaway `CODEX_HOME`. Codex hooks are `hooks/codex-hooks.json`, run with `--host=codex`: Codex has no `ask` (it logs "unsupported permissionDecision:ask" and runs the command), so the guard turns an ask into a deny that tells the model to get a yes and rerun with `TESTSPRITE_CONFIRMED=1`, and it never returns `allow` there. Settings are `CLAUDE_PLUGIN_OPTION_<KEY>` or `TESTSPRITE_<KEY>`. Skill text mentions neither host's root variable; `skills/testsprite/SKILL.md` has the one "In Codex" section.
 
 ## Do not restate the CLI
 
@@ -32,4 +38,4 @@ Never run a `testsprite` command that needs a key or reaches the cloud while dev
 
 ## Before publishing a change
 
-`node --test tests/*.test.mjs`, `python3 -I scripts/flag_trace.py`, `sh scripts/secret_scan.sh`, `claude plugin validate --strict` on the manifest, marketplace, `skills` and `agents`, and `sh scripts/check_budget.sh`. Commit with the repository's noreply identity.
+`node --test tests/*.test.mjs`, `python3 -I scripts/flag_trace.py`, `sh scripts/secret_scan.sh`, `claude plugin validate --strict` on the manifest, marketplace, `skills` and `agents`, and `sh scripts/check_budget.sh`; then the kit checks `python3 scripts/kit/check-manifests.py --validate`, `python3 scripts/kit/secret-scan.py --tree --history` and `python3 scripts/kit/check-links.py`. Commit with the repository's noreply identity.

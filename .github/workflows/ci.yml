@@ -4,6 +4,24 @@ on:
     branches: [main]
   pull_request:
 jobs:
+  manifests:   # kit:manifests:start
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with: { python-version: "3.12" }
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with: { node-version: 22 }
+      - name: Install Claude Code CLI (for plugin validate)
+        run: npm install -g @anthropic-ai/claude-code
+      - name: Manifests, versions, install policy, kit copies, rendered blocks
+        run: python3 scripts/kit/check-manifests.py --validate
+      - name: Secret scan (tree and history)
+        run: python3 scripts/kit/secret-scan.py --tree --history
+      - name: Local markdown links
+        run: python3 scripts/kit/check-links.py
+  # kit:manifests:end
   checks:
     runs-on: ubuntu-latest
     strategy:
@@ -37,14 +55,11 @@ jobs:
           node-version: 22
       - name: Install Claude Code
         run: npm i -g @anthropic-ai/claude-code
-      - name: Manifest, marketplace, skills and agents validate
+      - name: Skills and agents validate
         run: |
-          claude plugin validate --strict .claude-plugin/plugin.json
-          claude plugin validate --strict .claude-plugin/marketplace.json
           claude plugin validate --strict skills
           claude plugin validate --strict agents
-      - name: Claude and Codex manifests carry the same version
-        run: |
-          node -e "const r=f=>JSON.parse(require('fs').readFileSync(f,'utf8')); const a=r('.claude-plugin/plugin.json').version,b=r('.codex-plugin/plugin.json').version,c=r('.claude-plugin/marketplace.json').plugins[0].version; if(a!==b||a!==c){console.error('version mismatch',a,b,c);process.exit(1)}; r('.agents/plugins/marketplace.json'); r('hooks/codex-hooks.json')"
+      - name: Codex marketplace and hook config parse
+        run: node -e "const r=f=>JSON.parse(require('fs').readFileSync(f,'utf8')); r('.agents/plugins/marketplace.json'); r('hooks/codex-hooks.json')"
       - name: Inventory and always-on context budget
         run: sh scripts/check_budget.sh 400
