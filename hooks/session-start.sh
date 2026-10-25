@@ -16,4 +16,4 @@ if [ -z "$found" ]; then
     [ -n "$(git -C "$top" ls-files -- '*.testsprite/config.json' 2>/dev/null | head -n 1)" ] && found=1
 fi
 [ -n "$found" ] || exit 0
-exec node "$(dirname "$0")/session-start.mjs"
+exec node "$(dirname "$0")/session-start.mjs" "$@"

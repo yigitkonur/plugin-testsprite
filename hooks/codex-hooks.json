@@ -1,0 +1,15 @@
+{
+  "description": "TestSprite steering hooks for Codex (session state, spend/destructive guard, verify-before-done)",
+  "hooks": {
+    "SessionStart": [
+      { "hooks": [ { "type": "command", "command": "sh \"${PLUGIN_ROOT}/hooks/session-start.sh\" --host=codex", "timeout": 10 } ] }
+    ],
+    "PreToolUse": [
+      { "matcher": "^(Bash|shell|local_shell|exec_command)$",
+        "hooks": [ { "type": "command", "command": "sh \"${PLUGIN_ROOT}/hooks/guard.sh\" --host=codex", "timeout": 10 } ] }
+    ],
+    "Stop": [
+      { "hooks": [ { "type": "command", "command": "sh \"${PLUGIN_ROOT}/hooks/stop-gate.sh\" --host=codex", "timeout": 10 } ] }
+    ]
+  }
+}

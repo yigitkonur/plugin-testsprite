@@ -1,1 +1,1 @@
-{ "shipped": ["skills/", "agents/", "hooks/", "bin/", "lib/"] }
+{ "shipped": ["skills/", "agents/", "hooks/", "bin/", "lib/", ".codex-plugin/", ".agents/"] }

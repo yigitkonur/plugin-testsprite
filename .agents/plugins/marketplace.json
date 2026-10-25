@@ -1,0 +1,12 @@
+{
+  "name": "plugin-testsprite",
+  "interface": { "displayName": "TestSprite (unofficial)" },
+  "plugins": [
+    {
+      "name": "testsprite",
+      "source": { "source": "url", "url": "https://github.com/yigitkonur/plugin-testsprite.git" },
+      "policy": { "installation": "AVAILABLE", "authentication": "ON_INSTALL" },
+      "category": "Developer Tools"
+    }
+  ]
+}

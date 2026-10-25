@@ -3,7 +3,8 @@
 // Claude Code's background auto-update only touches ENABLED plugins, so an install that is
 // deliberately left off (`claude plugin disable ...`) never moves. This walks the install
 // records, refreshes the marketplace once, and runs `claude plugin update` for each install.
-// Enabled/disabled state is left exactly as it was. Safe to run from cron.
+// Enabled/disabled state is left exactly as it was. Safe to run from cron. If `codex` is on PATH it also runs
+// `codex plugin marketplace upgrade plugin-testsprite`.
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -18,6 +19,7 @@ const entries = (records.plugins?.[id] || [])
   .filter((e) => e.projectPath);
 
 const run = (args, cwd) => spawnSync('claude', args, { cwd, encoding: 'utf8', timeout: 180_000 });
+const run2 = (bin, args) => spawnSync(bin, args, { encoding: 'utf8', timeout: 180_000 });
 const stamp = () => new Date().toISOString();
 
 const refresh = run(['plugin', 'marketplace', 'update', market], undefined);
@@ -46,5 +48,12 @@ for (const e of fresh.filter((x) => x.scope !== 'user' && x.projectPath && lates
   const bad = steps.find((s) => run(['plugin', ...s], e.projectPath).status !== 0);
   if (bad) failed += 1;
   console.log(`${stamp()} ${e.projectPath} [${e.scope}]: ${bad ? `repair failed at ${bad[0]}` : `repaired ${e.version} -> ${latest}, ${wasOn ? 'enabled' : 'left disabled'}`}`);
+}
+
+// Codex: upgrading the marketplace alone moves the installed plugin; a new session loads it. On/off state is untouched.
+if (spawnSync('codex', ['--version'], { encoding: 'utf8' }).status === 0) {
+  const r = run2('codex', ['plugin', 'marketplace', 'upgrade', 'plugin-testsprite']);
+  const text = `${r.stdout || ''}${r.stderr || ''}`.trim().split('\n').pop() || `exit ${r.status}`;
+  console.log(`${stamp()} codex marketplace plugin-testsprite: ${r.status === 0 ? text : `upgrade failed (${text})`}`);
 }
 process.exit(failed ? 1 : 0);

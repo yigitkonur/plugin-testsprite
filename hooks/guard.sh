@@ -7,4 +7,4 @@ case $input in
   *testsprite*|*sprite-state*|*sprite-detect*|*sprite-ref*) ;;
   *) exit 0 ;;
 esac
-printf %s "$input" | exec node "$(dirname "$0")/guard.mjs"
+printf %s "$input" | exec node "$(dirname "$0")/guard.mjs" "$@"

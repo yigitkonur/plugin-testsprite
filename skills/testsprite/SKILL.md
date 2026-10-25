@@ -54,6 +54,10 @@ This plugin is unofficial. It adds judgment on top of the CLI and never restates
 - `sprite-detect [path] [--json]`: project kinds, transport, deploy signals, and the fit verdict per unit. Offline.
 - `sprite-ref skill|schema|help|version`: the installed CLI's own guidance, schema and help.
 
+## In Codex
+
+Same skills, no `bin/` on the PATH: run a helper as `node <plugin root>/bin/sprite-state` (and `sprite-detect`, `sprite-ref`), where the plugin root is two folders above this SKILL.md. A `!`command`` line in a skill is not run for you; run it yourself. There are no subagents: where a skill names `failure-triager` or `coverage-auditor`, read `agents/<name>.md` in the plugin root and follow it inline. There is no background mode: give a long command a long timeout instead. The guard blocks (it cannot ask): when it does, get the user's yes and rerun with `TESTSPRITE_CONFIRMED=1` in front. Settings are env vars: `TESTSPRITE_GUARD=false`, `TESTSPRITE_STOP_GATE=true`, `TESTSPRITE_CONFIRM_RUNS_OVER=<n>`.
+
 ## Pure-local commands (no network, no key)
 
 `testsprite test scaffold`, `testsprite test lint`, `testsprite test create --plan-template`, and any command with `--dry-run` make no network call. Use them to validate plans and to learn output shapes before any credentials exist.

@@ -20,7 +20,7 @@ try {
   pruneSessions();
 
   let version = '?';
-  try { version = JSON.parse(fs.readFileSync(path.join(process.env.CLAUDE_PLUGIN_ROOT || '.', '.claude-plugin', 'plugin.json'), 'utf8')).version; } catch { /* keep ? */ }
+  try { version = JSON.parse(fs.readFileSync(new URL('../.claude-plugin/plugin.json', import.meta.url), 'utf8')).version; } catch { /* keep ? */ }
 
   let local = false;
   const units = s.linkedRoots.map((r) => {

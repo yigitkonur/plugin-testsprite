@@ -10,6 +10,10 @@ Releases are automatic. Installers (and auto-update) gate on the computed versio
 - Do not bump versions by hand. To force or steer a release, run the `release` workflow from the Actions tab (`bump`, `force`).
 - Never rename the plugin (`testsprite`): installs are recorded under the name.
 
+## Claude Code and Codex
+
+One repo, two hosts. `.claude-plugin/plugin.json`, `.codex-plugin/plugin.json` and the marketplace entry carry the same version (`release.py` writes all three; ci checks they match; never hardcode the version in code). Codex rejects a `./` plugin path, so `.agents/plugins/marketplace.json` points at this repo with a `url` source instead of a folder. Codex hooks are `hooks/codex-hooks.json`, run with `--host=codex`: Codex has no `ask` (it logs "unsupported permissionDecision:ask" and runs the command), so the guard turns an ask into a deny that tells the model to get a yes and rerun with `TESTSPRITE_CONFIRMED=1`, and it never returns `allow` there. Settings are `CLAUDE_PLUGIN_OPTION_<KEY>` or `TESTSPRITE_<KEY>`. Skill text mentions neither host's root variable; `skills/testsprite/SKILL.md` has the one "In Codex" section.
+
 ## Do not restate the CLI
 
 Plugin text carries stable knowledge only. Exact flags come from the installed CLI (`sprite-ref help <command path>`). Every `testsprite ...` command and flag written in this repo must exist in `ci/pinned/<version>/`; `scripts/flag_trace.py` enforces it. Mark an intentional bad example with `trace:ignore`.

@@ -1,6 +1,6 @@
 # plugin-testsprite
 
-an **unofficial** claude code plugin for the [testsprite](https://www.testsprite.com) cli. it doesn't wrap or replace the cli. it's the judgment layer around it: set a repo up, audit a suite, get a real verdict before claude says "done", gate ci, and say it straight when a repo just isn't a fit.
+an **unofficial** claude code and codex plugin for the [testsprite](https://www.testsprite.com) cli. it doesn't wrap or replace the cli. it's the judgment layer around it: set a repo up, audit a suite, get a real verdict before claude says "done", gate ci, and say it straight when a repo just isn't a fit.
 
 not affiliated with or endorsed by testsprite. "TestSprite" is their name.
 
@@ -45,21 +45,24 @@ claude code may say three plugin settings are unset after install. that's fine, 
 
 ## keep it off until you need it, and keep it current
 
-**installed but off, on demand per project.** install once, globally, and leave it off. an off plugin costs no tokens, and you switch it on only in the project where you want it:
+**installed but off, on demand per project.** install once, globally, and leave it off. an off plugin costs no tokens, and you switch it on only in the project where you want it. it works in claude code and in codex:
 
-```
-claude plugin install testsprite --marketplace yigitkonur/plugin-testsprite
-claude plugin disable testsprite@plugin-testsprite --scope user
-```
+| | claude code | codex |
+|---|---|---|
+| install, global, off | `claude plugin install testsprite --marketplace yigitkonur/plugin-testsprite` (it installs off: the manifest says `defaultEnabled: false`) | `codex plugin marketplace add yigitkonur/plugin-testsprite`<br>`codex plugin add testsprite@plugin-testsprite`<br>`codex-plugin-project.sh global-off testsprite@plugin-testsprite` |
+| on, this project only (run in the project) | `claude plugin enable testsprite@plugin-testsprite --scope project` | `codex-plugin-project.sh on testsprite@plugin-testsprite . --trust` |
+| off again | `claude plugin disable testsprite@plugin-testsprite --scope project` | `codex-plugin-project.sh off testsprite@plugin-testsprite` |
+| update | `claude plugin update testsprite@plugin-testsprite` | `codex plugin marketplace upgrade plugin-testsprite` |
+| check | `claude plugin list` | `codex plugin list` |
 
-then, in a project:
+start a new session after switching. the project's `.claude/settings.json` records `true` or `false` and project beats user. checked in live sessions: enabled, a fresh session lists `testsprite:testsprite` and `testsprite:verify`; disabled, it lists nothing.
 
-```
-claude plugin enable testsprite@plugin-testsprite --scope project     # on, for this project
-claude plugin disable testsprite@plugin-testsprite --scope project    # off again
-```
-
-the project's `.claude/settings.json` records `true` or `false`, and project beats user. checked in live sessions: with it enabled a fresh session lists `testsprite:testsprite` and `testsprite:verify`; disabled, it lists nothing.
+codex notes:
+- codex has no `plugin enable` or `disable`. [`scripts/codex-plugin-project.sh`](scripts/codex-plugin-project.sh) edits the config for you (put it on your PATH). `on` writes `[plugins."testsprite@plugin-testsprite"] enabled = true` into `<project>/.codex/config.toml`, and codex ignores that file unless the project is trusted, which `--trust` adds. trusting a project also turns on its hooks and rules, so only do it for projects you own.
+- the first time, codex shows "Hooks need review": pick "Trust all and continue".
+- the plugin adds no mcp server, so `codex mcp list` stays empty. you know it's on when `codex plugin list` says `installed, enabled` and the `testsprite:*` skills are listed.
+- codex has no subagents, no `bin/` on the path and no ask prompts for hooks. the skills tell codex to run `node <plugin root>/bin/sprite-*` and to read `agents/*.md` inline. the guard blocks instead of asking: get your yes, then the model reruns with `TESTSPRITE_CONFIRMED=1` in front. settings are env vars there: `TESTSPRITE_GUARD`, `TESTSPRITE_STOP_GATE`, `TESTSPRITE_CONFIRM_RUNS_OVER`.
+- no github ssh key on the machine? set `CLAUDE_CODE_PLUGIN_PREFER_HTTPS=1` so claude's background updates work.
 
 **stay current.** claude code leaves auto-update off for third-party marketplaces, so turn it on once and enabled installs follow new releases: `/plugin` → marketplaces → `plugin-testsprite` → enable auto-update. or put it in `~/.claude/settings.json`:
 
@@ -82,9 +85,9 @@ updates land in the background after your first message of a session (about 3 mi
 23 */6 * * * flock -n /tmp/tsp-update.lock node /path/to/scripts/update-installs.mjs >> ~/tsp-update.log 2>&1
 ```
 
-on macos use a launchd agent with `StartInterval` 21600 that runs `node /path/to/scripts/update-installs.mjs` (give it a `PATH` that contains your `claude` binary, not a shell function).
+if `codex` is on the path the script also runs `codex plugin marketplace upgrade plugin-testsprite`. on macos use a launchd agent with `StartInterval` 21600 that runs `node /path/to/scripts/update-installs.mjs` (give it a `PATH` that contains your `claude` binary, not a shell function).
 
-releases are automatic. once ci is green on `main`, [`release.yml`](.github/workflows/release.yml) bumps the version in both manifests, writes the changelog entry, tags `vX.Y.Z` and `testsprite--vX.Y.Z` and publishes a github release, whenever something under `skills/`, `agents/`, `hooks/`, `bin/` or `lib/` changed. a version that doesn't change never reaches installs, which is why nobody bumps it by hand.
+releases are automatic. once ci is green on `main`, [`release.yml`](.github/workflows/release.yml) bumps the version in the claude and codex manifests and the marketplace entry, writes the changelog entry, tags `vX.Y.Z` and `testsprite--vX.Y.Z` and publishes a github release, whenever something under `skills/`, `agents/`, `hooks/`, `bin/` or `lib/` changed. a version that doesn't change never reaches installs, which is why nobody bumps it by hand.
 
 ## what it does
 

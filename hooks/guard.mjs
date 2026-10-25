@@ -3,7 +3,7 @@
 // Anything it cannot parse is silent (fail open): this raises friction on common footguns, it is not a security boundary.
 import { splitCommands, testspriteArgs } from '../lib/shell-split.mjs';
 import { parseArgs, classify, isReadOnly, isRunAttempt, isStrictRead } from '../lib/guard-rules.mjs';
-import { readStdinJson, optionOn, optionNumber, readSession, writeSession } from '../lib/session.mjs';
+import { readStdinJson, optionOn, optionNumber, readSession, writeSession, codex } from '../lib/session.mjs';
 
 const READ_ONLY_AGENTS = /(^|:)(failure-triager|coverage-auditor)$/;
 const FIRST_RUN = 'TestSprite: first billable run in this session (about 0.5 credit for a frontend test, 0.2 for a backend rerun). Say what it tests and approve to continue.';
@@ -54,8 +54,14 @@ try {
     if (args) calls.push(parseArgs(args));
   }
   // No testsprite call: only the plugin's own helpers (sprite-state, sprite-detect, sprite-ref) can still earn an allow.
-  const out = calls.length ? decide(input, raw, calls)
+  let out = calls.length ? decide(input, raw, calls)
     : optionOn('guard', true) && isStrictRead(raw, input.cwd) ? { decision: 'allow', reason: 'TestSprite plugin: a single read-only helper command with no shell syntax.' } : null;
+  // Codex rejects `ask` ("unsupported permissionDecision:ask", then runs the command) and has no use for our `allow`.
+  // So there an ask becomes a deny that tells the model to get the user's yes and rerun with TESTSPRITE_CONFIRMED=1 in front.
+  if (out && codex) {
+    if (out.decision === 'allow' || (out.decision === 'ask' && /(^|[\s;&|(])TESTSPRITE_CONFIRMED=1\s/.test(raw))) out = null;
+    else if (out.decision === 'ask') out = { decision: 'deny', reason: `${out.reason}\nAsk the user to confirm. On a yes, rerun the same command with TESTSPRITE_CONFIRMED=1 in front of it.` };
+  }
   if (out) process.stdout.write(JSON.stringify({ hookSpecificOutput: { hookEventName: 'PreToolUse', permissionDecision: out.decision, permissionDecisionReason: out.reason } }));
 } catch {
   process.exit(0);
