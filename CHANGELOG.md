@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.3 - 2026-10-25
+
+- fix(detect): argparse only marks a CLI in a file that runs (93142ab)
+
 ## 0.2.2
 
 - ci: automatic version bump, tag and release after ci passes on main (811d882)
