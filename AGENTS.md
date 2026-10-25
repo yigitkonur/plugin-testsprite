@@ -4,9 +4,9 @@ Working rules for this repo.
 
 ## Release rule
 
-Releases are automatic. Installers (and auto-update) gate on the computed version, so a shipped change that keeps the same `version` never reaches anyone. After `ci` passes on `main`, `.github/workflows/release.yml` runs `scripts/release.mjs`: if anything under `skills/`, `agents/`, `hooks/`, `bin/` or `lib/` changed since the last `testsprite--v*` tag, it bumps `version` (plugin.json, the marketplace entry and `metadata.version` together), adds a CHANGELOG entry, commits `chore(release): … [skip ci]`, tags with `claude plugin tag --push` and publishes a GitHub release.
+Releases are automatic. Installers (and auto-update) gate on the computed version, so a shipped change that keeps the same `version` never reaches anyone. After `ci` passes on `main`, `.github/workflows/release.yml` runs `scripts/release.py` (the shared script every plugin repo of this owner vendors): if anything under `skills/`, `agents/`, `hooks/`, `bin/` or `lib/` (the list in `.github/release.json`) changed since the last release tag, it bumps `version` (plugin.json, the marketplace entry and `metadata.version` together), adds a CHANGELOG entry, runs `scripts/release-gate.sh` (the context-budget check) and `claude plugin validate --strict` on the bumped tree, commits `chore(release): … [skip ci]`, tags `v<x.y.z>` and `testsprite--v<x.y.z>` and publishes a GitHub release.
 
-- The bump comes from conventional commits since the last tag: `feat` is a minor, `!:` or `BREAKING CHANGE` is a major (a minor while the version is 0.x), anything else is a patch. A hand-written `## X.Y.Z` entry in CHANGELOG.md wins over the generated one.
+- The bump comes from conventional commits since the last tag: `feat` is a minor, `!:` or `BREAKING CHANGE` is a major (a minor while the version is 0.x), anything else is a patch. A hand-written `## X.Y.Z` entry in CHANGELOG.md wins over the generated one; a `Release-Level: minor|major` line in a commit body raises the level; run the `release` workflow by hand to force a level.
 - Do not bump versions by hand. To force or steer a release, run the `release` workflow from the Actions tab (`bump`, `force`).
 - Never rename the plugin (`testsprite`): installs are recorded under the name.
 

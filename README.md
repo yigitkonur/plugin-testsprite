@@ -56,7 +56,7 @@ updates land in the background after your first message of a session (about 3 mi
 23 */6 * * * flock -n /tmp/tsp-update.lock node /path/to/scripts/update-installs.mjs >> ~/tsp-update.log 2>&1
 ```
 
-releases are automatic. once ci is green on `main`, [`release.yml`](.github/workflows/release.yml) bumps the version in both manifests, writes the changelog entry, tags `testsprite--vX.Y.Z` and publishes a github release, whenever something under `skills/`, `agents/`, `hooks/`, `bin/` or `lib/` changed. a version that doesn't change never reaches installs, which is why nobody bumps it by hand.
+releases are automatic. once ci is green on `main`, [`release.yml`](.github/workflows/release.yml) bumps the version in both manifests, writes the changelog entry, tags `vX.Y.Z` and `testsprite--vX.Y.Z` and publishes a github release, whenever something under `skills/`, `agents/`, `hooks/`, `bin/` or `lib/` changed. a version that doesn't change never reaches installs, which is why nobody bumps it by hand.
 
 then bring your own testsprite cli and key:
 
