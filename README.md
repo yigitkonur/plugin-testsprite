@@ -35,6 +35,23 @@ claude plugin disable testsprite@plugin-testsprite --scope project
 
 flip it on whenever you want with `claude plugin enable testsprite@plugin-testsprite --scope project` (and off again with `disable`). the project's `.claude/settings.json` records it as `"testsprite@plugin-testsprite": false` until then.
 
+**stay current.** claude code leaves auto-update off for third-party marketplaces, so turn it on once and every install (enabled or not) follows new releases: `/plugin` → marketplaces → `plugin-testsprite` → enable auto-update. or put it in `~/.claude/settings.json`:
+
+```json
+{
+  "extraKnownMarketplaces": {
+    "plugin-testsprite": {
+      "source": { "source": "github", "repo": "yigitkonur/plugin-testsprite" },
+      "autoUpdate": true
+    }
+  }
+}
+```
+
+updates land in the background after your first message of a session (up to ~10 min later) and load on the next start, or right away with `/reload-plugins`. to pull one by hand: `claude plugin update testsprite@plugin-testsprite`.
+
+releases are automatic. once ci is green on `main`, [`release.yml`](.github/workflows/release.yml) bumps the version in both manifests, writes the changelog entry, tags `testsprite--vX.Y.Z` and publishes a github release, whenever something under `skills/`, `agents/`, `hooks/`, `bin/` or `lib/` changed. a version that doesn't change never reaches installs, which is why nobody bumps it by hand.
+
 then bring your own testsprite cli and key:
 
 ```

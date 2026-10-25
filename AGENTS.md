@@ -4,7 +4,11 @@ Working rules for this repo.
 
 ## Release rule
 
-Any shipped change (skills, agents, hooks, `bin/`, `lib/`, references, templates) bumps `version` in **both** `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json` in the same commit; installers gate updates on it. Tag with `claude plugin tag --push` once CI is green. Never rename the plugin (`testsprite`): installs are recorded under the name.
+Releases are automatic. Installers (and auto-update) gate on the computed version, so a shipped change that keeps the same `version` never reaches anyone. After `ci` passes on `main`, `.github/workflows/release.yml` runs `scripts/release.mjs`: if anything under `skills/`, `agents/`, `hooks/`, `bin/` or `lib/` changed since the last `testsprite--v*` tag, it bumps `version` (plugin.json, the marketplace entry and `metadata.version` together), adds a CHANGELOG entry, commits `chore(release): … [skip ci]`, tags with `claude plugin tag --push` and publishes a GitHub release.
+
+- The bump comes from conventional commits since the last tag: `feat` is a minor, `!:` or `BREAKING CHANGE` is a major (a minor while the version is 0.x), anything else is a patch. A hand-written `## X.Y.Z` entry in CHANGELOG.md wins over the generated one.
+- Do not bump versions by hand. To force or steer a release, run the `release` workflow from the Actions tab (`bump`, `force`).
+- Never rename the plugin (`testsprite`): installs are recorded under the name.
 
 ## Do not restate the CLI
 

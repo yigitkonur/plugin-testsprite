@@ -1,0 +1,84 @@
+name: release
+# Installers (and auto-update) gate on the plugin's computed version, so a shipped change
+# that keeps the same `version` never reaches anyone. After ci passes on main, this bumps
+# the version in both manifests, tags, and publishes a GitHub release. Rules: AGENTS.md.
+on:
+  workflow_run:
+    workflows: [ci]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: auto, patch, minor or major
+        default: auto
+      force:
+        description: release even when nothing under skills, agents, hooks, bin or lib changed
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: A newer push owns the next release
+        id: fresh
+        run: |
+          git fetch --quiet origin main
+          if [ "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)" ]; then echo "fresh=true" >> "$GITHUB_OUTPUT"; else echo "this commit is no longer the tip of main; its own ci run will release"; fi
+      - name: Decide the next version
+        id: next
+        if: steps.fresh.outputs.fresh == 'true'
+        env:
+          BUMP: ${{ inputs.bump || 'auto' }}
+          FORCE: ${{ inputs.force }}
+        run: |
+          set -e
+          flags=""
+          [ "$FORCE" = "true" ] && flags="--force"
+          node scripts/release.mjs --bump "$BUMP" $flags > /tmp/release.out
+          cat /tmp/release.out
+          cat /tmp/release.out >> "$GITHUB_OUTPUT"
+      - name: Validate the bumped manifests
+        if: steps.next.outputs.released == 'true'
+        run: |
+          npm i -g @anthropic-ai/claude-code
+          claude plugin validate --strict .claude-plugin/plugin.json
+          claude plugin validate --strict .claude-plugin/marketplace.json
+          sh scripts/check_budget.sh 400
+      - name: Commit, tag and push
+        if: steps.next.outputs.released == 'true'
+        env:
+          VERSION: ${{ steps.next.outputs.version }}
+        run: |
+          set -e
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .claude-plugin CHANGELOG.md
+          git commit -m "chore(release): testsprite v${VERSION} [skip ci]"
+          git push origin HEAD:main
+          claude plugin tag --push -m "testsprite v%s"
+      - name: Publish the GitHub release
+        if: steps.next.outputs.released == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.next.outputs.version }}
+          TAG: ${{ steps.next.outputs.tag }}
+        run: |
+          awk -v v="## ${VERSION}" '$0==v{p=1;next} /^## /{p=0} p' CHANGELOG.md > /tmp/notes.md
+          gh release create "$TAG" --title "testsprite v${VERSION}" --notes-file /tmp/notes.md --verify-tag
