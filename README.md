@@ -7,11 +7,17 @@ not affiliated with or endorsed by testsprite. "TestSprite" is their name.
 ## tl;dr install
 
 ```
+claude plugin install testsprite --marketplace yigitkonur/plugin-testsprite
+```
+
+one line: `--marketplace` adds the marketplace first if you don't have it yet, then installs.
+
+prefer two steps, or already inside a claude code session? same thing:
+
+```
 claude plugin marketplace add yigitkonur/plugin-testsprite
 claude plugin install testsprite@plugin-testsprite
 ```
-
-already inside a claude code session? same thing as slash commands:
 
 ```
 /plugin marketplace add yigitkonur/plugin-testsprite
@@ -19,6 +25,15 @@ already inside a claude code session? same thing as slash commands:
 ```
 
 `--scope user|project|local` on `claude plugin install` picks where it lands (user is the default).
+
+**installed but off.** want it sitting in one repo, ready, without it running until you say so?
+
+```
+claude plugin install testsprite --marketplace yigitkonur/plugin-testsprite --scope project
+claude plugin disable testsprite@plugin-testsprite --scope project
+```
+
+flip it on whenever you want with `claude plugin enable testsprite@plugin-testsprite --scope project` (and off again with `disable`). the project's `.claude/settings.json` records it as `"testsprite@plugin-testsprite": false` until then.
 
 then bring your own testsprite cli and key:
 
