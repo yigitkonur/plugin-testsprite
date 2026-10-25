@@ -26,38 +26,6 @@ claude plugin install testsprite@plugin-testsprite
 
 `--scope user|project|local` on `claude plugin install` picks where it lands (user is the default).
 
-**installed but off.** want it sitting in one repo, ready, without it running until you say so?
-
-```
-claude plugin install testsprite --marketplace yigitkonur/plugin-testsprite --scope project
-claude plugin disable testsprite@plugin-testsprite --scope project
-```
-
-flip it on whenever you want with `claude plugin enable testsprite@plugin-testsprite --scope project` (and off again with `disable`). the project's `.claude/settings.json` records it as `"testsprite@plugin-testsprite": false` until then.
-
-**stay current.** claude code leaves auto-update off for third-party marketplaces, so turn it on once and every install (enabled or not) follows new releases: `/plugin` → marketplaces → `plugin-testsprite` → enable auto-update. or put it in `~/.claude/settings.json`:
-
-```json
-{
-  "extraKnownMarketplaces": {
-    "plugin-testsprite": {
-      "source": { "source": "github", "repo": "yigitkonur/plugin-testsprite" },
-      "autoUpdate": true
-    }
-  }
-}
-```
-
-updates land in the background after your first message of a session (about 3 min in a test, up to ~10 by design) and load on the next start, or right away with `/reload-plugins`. to pull one by hand: `claude plugin update testsprite@plugin-testsprite`.
-
-**caveat: auto-update skips disabled plugins.** measured: an enabled project install moved to the new version by itself, while installs left off (the "installed but off" recipe above) stayed on the old one. for those, [`scripts/update-installs.mjs`](scripts/update-installs.mjs) walks every project and local install, refreshes the marketplace and runs `claude plugin update` in each. it never changes on/off state, and it repairs git worktrees (claude resolves those to the main checkout and leaves their own record stale). run it by hand, or from cron:
-
-```
-23 */6 * * * flock -n /tmp/tsp-update.lock node /path/to/scripts/update-installs.mjs >> ~/tsp-update.log 2>&1
-```
-
-releases are automatic. once ci is green on `main`, [`release.yml`](.github/workflows/release.yml) bumps the version in both manifests, writes the changelog entry, tags `vX.Y.Z` and `testsprite--vX.Y.Z` and publishes a github release, whenever something under `skills/`, `agents/`, `hooks/`, `bin/` or `lib/` changed. a version that doesn't change never reaches installs, which is why nobody bumps it by hand.
-
 then bring your own testsprite cli and key:
 
 ```
@@ -74,6 +42,49 @@ the `!` runs it in your session with a masked prompt, so the key never touches t
 - the testsprite cli (checked against 0.15.x). the plugin never installs it for you.
 
 claude code may say three plugin settings are unset after install. that's fine, the defaults apply. `/plugin configure testsprite@plugin-testsprite` changes them.
+
+## keep it off until you need it, and keep it current
+
+**installed but off, on demand per project.** install once, globally, and leave it off. an off plugin costs no tokens, and you switch it on only in the project where you want it:
+
+```
+claude plugin install testsprite --marketplace yigitkonur/plugin-testsprite
+claude plugin disable testsprite@plugin-testsprite --scope user
+```
+
+then, in a project:
+
+```
+claude plugin enable testsprite@plugin-testsprite --scope project     # on, for this project
+claude plugin disable testsprite@plugin-testsprite --scope project    # off again
+```
+
+the project's `.claude/settings.json` records `true` or `false`, and project beats user. checked in live sessions: with it enabled a fresh session lists `testsprite:testsprite` and `testsprite:verify`; disabled, it lists nothing.
+
+**stay current.** claude code leaves auto-update off for third-party marketplaces, so turn it on once and enabled installs follow new releases: `/plugin` → marketplaces → `plugin-testsprite` → enable auto-update. or put it in `~/.claude/settings.json`:
+
+```json
+{
+  "extraKnownMarketplaces": {
+    "plugin-testsprite": {
+      "source": { "source": "github", "repo": "yigitkonur/plugin-testsprite" },
+      "autoUpdate": true
+    }
+  }
+}
+```
+
+updates land in the background after your first message of a session (about 3 min in a test, up to ~10 by design) and load on the next start, or right away with `/reload-plugins`. to pull one by hand: `claude plugin update testsprite@plugin-testsprite`.
+
+**caveat: auto-update skips disabled plugins.** measured: an enabled project install moved to the new version by itself, while installs left off (the global-but-off recipe above) stayed on the old one. for those, [`scripts/update-installs.mjs`](scripts/update-installs.mjs) walks every user, project and local install, refreshes the marketplace and runs `claude plugin update` for each. it never changes on/off state, and it repairs git worktrees (claude resolves those to the main checkout and leaves their own record stale). run it by hand, or schedule it. cron on linux:
+
+```
+23 */6 * * * flock -n /tmp/tsp-update.lock node /path/to/scripts/update-installs.mjs >> ~/tsp-update.log 2>&1
+```
+
+on macos use a launchd agent with `StartInterval` 21600 that runs `node /path/to/scripts/update-installs.mjs` (give it a `PATH` that contains your `claude` binary, not a shell function).
+
+releases are automatic. once ci is green on `main`, [`release.yml`](.github/workflows/release.yml) bumps the version in both manifests, writes the changelog entry, tags `vX.Y.Z` and `testsprite--vX.Y.Z` and publishes a github release, whenever something under `skills/`, `agents/`, `hooks/`, `bin/` or `lib/` changed. a version that doesn't change never reaches installs, which is why nobody bumps it by hand.
 
 ## what it does
 

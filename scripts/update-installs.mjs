@@ -1,9 +1,9 @@
-// Update every project- or local-scope install of a plugin, including the disabled ones.
+// Update every user-, project- and local-scope install of a plugin, including the disabled ones.
 //   node scripts/update-installs.mjs [plugin@marketplace]      (default: testsprite@plugin-testsprite)
 // Claude Code's background auto-update only touches ENABLED plugins, so an install that is
-// deliberately left off (`claude plugin disable ... --scope project`) never moves. This walks
-// the install records, refreshes the marketplace once, and runs `claude plugin update` in each
-// project. Enabled/disabled state is left exactly as it was. Safe to run from cron.
+// deliberately left off (`claude plugin disable ...`) never moves. This walks the install
+// records, refreshes the marketplace once, and runs `claude plugin update` for each install.
+// Enabled/disabled state is left exactly as it was. Safe to run from cron.
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -13,7 +13,9 @@ const id = process.argv[2] || 'testsprite@plugin-testsprite';
 const market = id.split('@')[1];
 const home = process.env.CLAUDE_CONFIG_DIR || path.join(os.homedir(), '.claude');
 const records = JSON.parse(fs.readFileSync(path.join(home, 'plugins', 'installed_plugins.json'), 'utf8'));
-const entries = (records.plugins?.[id] || []).filter((e) => e.scope !== 'user' && e.projectPath);
+const entries = (records.plugins?.[id] || [])
+  .map((e) => (e.scope === 'user' ? { ...e, projectPath: os.homedir() } : e)) // user scope has no project; run from home
+  .filter((e) => e.projectPath);
 
 const run = (args, cwd) => spawnSync('claude', args, { cwd, encoding: 'utf8', timeout: 180_000 });
 const stamp = () => new Date().toISOString();
