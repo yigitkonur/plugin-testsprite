@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.2
+
+- ci: automatic version bump, tag and release after ci passes on main (811d882)
+- docs: lead with the one-line install (--marketplace), add the installed-but-off recipe (d6789ec)
+
 ## 0.2.1
 
 - **`sprite-detect` reads the port of a plain `node <file>` start script** (`PORT || 4173`, `.listen(4173)`). Before, a zero-dependency Node app reported no dev server, so `verify` had to ask for the port.
